@@ -225,8 +225,7 @@ export default function OrderTable() {
                       <Button
                         variant="filled"
                         size="sm"
-                        color="#6366F1"
-                        className="flex items-center justify-center"
+                        className="bg-indigo-600 text-white flex items-center justify-center hover:bg-indigo-700"
                       >
                         View Detail
                       </Button>

@@ -5,7 +5,7 @@ import DropdownNotification from "./DropdownNotification";
 
 export default function Header() {
   return (
-    <header className="top-0 flex w-full bg-white shadow-md relative z-40">
+    <header className="top-0 flex w-full bg-white shadow-md relative z-10">
       <div className="flex flex-grow items-center justify-between px-4 py-4  md:px-6 2xl:px-11">
         <div className="hidden sm:block">
           <form action="https://formbold.com/s/unique_form_id" method="POST">

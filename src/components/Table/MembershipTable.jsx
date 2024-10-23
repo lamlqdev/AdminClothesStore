@@ -2,11 +2,17 @@ import {
   Card,
   CardBody,
   CardHeader,
-  CardFooter,
   Typography,
 } from "@material-tailwind/react";
 
+import { useState } from "react";
+import DeleteMembershipModal from "../Modal/DeleteMembershipModal";
+import ManageMembershipModal from "../Modal/ManageMembershipModal";
+
 export default function MembershipTable() {
+  const [isModalDeleteOpen, setModalDeleteOpen] = useState(false);
+  const [isModalManageOpen, setModalManageOpen] = useState(false);
+
   const TABLE_HEAD = [
     "Membership name",
     "Minimum spend amount",
@@ -37,6 +43,18 @@ export default function MembershipTable() {
 
   return (
     <Card className="h-full w-full">
+      {isModalDeleteOpen && (
+        <DeleteMembershipModal
+          open={isModalDeleteOpen}
+          setOpen={setModalDeleteOpen}
+        />
+      )}
+      {isModalManageOpen && (
+        <ManageMembershipModal
+          open={isModalManageOpen}
+          setOpen={setModalManageOpen}
+        />
+      )}
       <CardHeader floated={false} shadow={false} className="rounded-none">
         <div className="mb-3 flex mx-4 items-center justify-between gap-8">
           <div>
@@ -44,7 +62,10 @@ export default function MembershipTable() {
               Membership list
             </Typography>
           </div>
-          <button className="bg-blue-500 hover:bg-blue-700 text-white text-sm py-2 px-4 rounded">
+          <button
+            className="bg-blue-500 hover:bg-blue-700 text-white text-sm py-2 px-4 rounded"
+            onClick={() => setModalManageOpen(true)}
+          >
             Create membership
           </button>
         </div>
@@ -103,10 +124,16 @@ export default function MembershipTable() {
                 </td>
                 <td className="p-4 border-b border-blue-gray-100">
                   <div className="flex items-center space-x-2">
-                    <button className="bg-blue-400 hover:bg-blue-500 text-white py-1 px-3 rounded text-sm">
+                    <button
+                      className="bg-blue-400 hover:bg-blue-500 text-white py-1 px-3 rounded text-sm"
+                      onClick={() => setModalManageOpen(true)}
+                    >
                       Edit
                     </button>
-                    <button className="bg-red-400 hover:bg-red-500 text-white py-1 px-3 rounded text-sm">
+                    <button
+                      className="bg-red-400 hover:bg-red-500 text-white py-1 px-3 rounded text-sm"
+                      onClick={() => setModalDeleteOpen(true)}
+                    >
                       Delete
                     </button>
                   </div>
