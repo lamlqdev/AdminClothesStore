@@ -8,14 +8,11 @@ import {
   CardBody,
   Chip,
   CardFooter,
-  Tabs,
-  TabsHeader,
-  Tab,
   Avatar,
 } from "@material-tailwind/react";
 import { useState } from "react";
 
-const TABS = [
+const FILTERS = [
   { label: "All", value: "all" },
   { label: "Pending", value: "pending" },
   { label: "Delivered", value: "delivered" },
@@ -83,7 +80,12 @@ const TABLE_ROWS = [
 ];
 
 export default function OrderTable() {
-  const [activeTab, setActiveTab] = useState("all");
+  const [activeFilter, setActiveFilter] = useState("all");
+
+  const filteredRows =
+    activeFilter === "all"
+      ? TABLE_ROWS
+      : TABLE_ROWS.filter((row) => row.status.toLowerCase() === activeFilter);
 
   return (
     <Card className="h-full w-full">
@@ -96,26 +98,23 @@ export default function OrderTable() {
           </div>
         </div>
         <div className="flex flex-col my-4 items-center justify-between gap-4 md:flex-row">
-          <Tabs className="w-full md:w-max ml-3">
-            <TabsHeader>
-              {TABS.map(({ label, value }) => (
-                <Tab
-                  key={value}
-                  value={value}
-                  onClick={() => setActiveTab(value)}
-                  className={`px-3 py-2 text-sm gap-1 rounded-md transition-all duration-300 ${
-                    activeTab === value
-                      ? "bg-primaryColor text-white"
-                      : "bg-transparent text-gray-700 hover:bg-gray-300"
-                  }`}
-                >
-                  &nbsp;&nbsp;{label}&nbsp;&nbsp;
-                </Tab>
-              ))}
-            </TabsHeader>
-          </Tabs>
+          <div className="flex gap-2 ml-3">
+            {FILTERS.map(({ label, value }) => (
+              <Button
+                key={value}
+                onClick={() => setActiveFilter(value)}
+                className={`px-3 py-2 text-sm rounded-md ${
+                  activeFilter === value
+                    ? "bg-primaryColor text-white"
+                    : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                }`}
+              >
+                {label}
+              </Button>
+            ))}
+          </div>
           <div className="w-full md:w-72 mr-4">
-            <div className="relative w-full md:w-72 mr-4">
+            <div className="relative w-full">
               <Input
                 placeholder="Search something..."
                 className="border border-gray-300 rounded-lg shadow-sm pl-4 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-300"
@@ -146,7 +145,7 @@ export default function OrderTable() {
             </tr>
           </thead>
           <tbody>
-            {TABLE_ROWS.map(
+            {filteredRows.map(
               ({ orderId, date, customer, price, status }, index) => {
                 const isLast = index === TABLE_ROWS.length - 1;
                 const classes = isLast

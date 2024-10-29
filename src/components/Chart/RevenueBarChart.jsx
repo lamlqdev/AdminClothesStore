@@ -3,9 +3,7 @@ import {
   CardBody,
   CardHeader,
   Typography,
-  Tabs,
-  TabsHeader,
-  Tab,
+  Button,
 } from "@material-tailwind/react";
 import Chart from "react-apexcharts";
 import { useState } from "react";
@@ -104,8 +102,9 @@ const chartConfig = {
   },
 };
 
-export default function RevevueBarChart() {
+export default function RevenueBarChart() {
   const [activeTab, setActiveTab] = useState("month");
+
   return (
     <Card>
       <CardHeader
@@ -119,24 +118,21 @@ export default function RevevueBarChart() {
             Total Revenue
           </Typography>
         </div>
-        <Tabs className="w-full md:w-max ml-3">
-          <TabsHeader>
-            {TABS.map(({ label, value }) => (
-              <Tab
-                key={value}
-                value={value}
-                onClick={() => setActiveTab(value)}
-                className={`px-3 py-2 text-sm gap-1 rounded-md transition-all duration-300 ${
-                  activeTab === value
-                    ? "bg-primaryColor text-white"
-                    : "bg-transparent text-gray-700 hover:bg-gray-300"
-                }`}
-              >
-                &nbsp;&nbsp;{label}&nbsp;&nbsp;
-              </Tab>
-            ))}
-          </TabsHeader>
-        </Tabs>
+        <div className="flex gap-2 w-full md:w-max ml-3">
+          {TABS.map(({ label, value }) => (
+            <Button
+              key={value}
+              onClick={() => setActiveTab(value)}
+              className={`px-3 py-2 text-sm gap-1 rounded-md transition-all duration-300 ${
+                activeTab === value
+                  ? "bg-primaryColor text-white"
+                  : "bg-transparent text-gray-700 hover:bg-gray-300"
+              }`}
+            >
+              &nbsp;&nbsp;{label}&nbsp;&nbsp;
+            </Button>
+          ))}
+        </div>
       </CardHeader>
       <CardBody className="px-2 pb-0">
         <Chart {...chartConfig} />

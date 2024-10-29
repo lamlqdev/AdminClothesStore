@@ -6,6 +6,7 @@ import CustomerRelationshipManagementPage from "./pages/CustomerRelationshipMana
 import ECommercePage from "./pages/ECommerce";
 import CategoryPage from "./pages/Category";
 import SettingPage from "./pages/Setting";
+import UserProfile from "./pages/UserProfile";
 
 const router = createBrowserRouter([
   {
@@ -35,6 +36,10 @@ const router = createBrowserRouter([
       {
         path: "setting",
         element: <SettingPage />,
+      },
+      {
+        path: "user/:userId",
+        element: <UserProfile />,
       },
     ],
   },

@@ -5,6 +5,13 @@ import {
   Typography,
 } from "@material-tailwind/react";
 import Chart from "react-apexcharts";
+import { useState } from "react";
+
+const TABS = [
+  { label: "Week", value: "week" },
+  { label: "Month", value: "month" },
+  { label: "Year", value: "year" },
+];
 
 const chartConfig = {
   type: "line",
@@ -90,6 +97,8 @@ const chartConfig = {
 };
 
 export default function OrderLineChart() {
+  const [activeTab, setActiveTab] = useState("month");
+
   return (
     <Card className="shadow-md">
       <CardHeader
@@ -104,21 +113,20 @@ export default function OrderLineChart() {
           </Typography>
         </div>
         <ul className="flex gap-3 mr-4 text-sm">
-          <li>
-            <button className="px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 transition-all">
-              Week
-            </button>
-          </li>
-          <li>
-            <button className="px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 transition-all">
-              Month
-            </button>
-          </li>
-          <li>
-            <button className="px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 transition-all">
-              Year
-            </button>
-          </li>
+          {TABS.map(({ label, value }) => (
+            <li key={value}>
+              <button
+                onClick={() => setActiveTab(value)}
+                className={`px-4 py-2 rounded-lg transition-all ${
+                  activeTab === value
+                    ? "bg-primaryColor text-white"
+                    : "bg-gray-200 hover:bg-gray-300"
+                }`}
+              >
+                {label}
+              </button>
+            </li>
+          ))}
         </ul>
       </CardHeader>
       <CardBody className="px-2 pb-0 p-5">
@@ -127,3 +135,4 @@ export default function OrderLineChart() {
     </Card>
   );
 }
+
