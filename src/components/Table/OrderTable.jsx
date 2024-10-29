@@ -11,6 +11,7 @@ import {
   Avatar,
 } from "@material-tailwind/react";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const FILTERS = [
   { label: "All", value: "all" },
@@ -81,6 +82,12 @@ const TABLE_ROWS = [
 
 export default function OrderTable() {
   const [activeFilter, setActiveFilter] = useState("all");
+
+  const navigate = useNavigate();
+
+  const handleViewDetails = (orderId) => {
+    navigate(`/order/${orderId}`);
+  };
 
   const filteredRows =
     activeFilter === "all"
@@ -225,6 +232,7 @@ export default function OrderTable() {
                         variant="filled"
                         size="sm"
                         className="bg-indigo-600 text-white flex items-center justify-center hover:bg-indigo-700"
+                        onClick={() => handleViewDetails(orderId)}
                       >
                         View Detail
                       </Button>

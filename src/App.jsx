@@ -7,7 +7,7 @@ import ECommercePage from "./pages/ECommerce";
 import CategoryPage from "./pages/Category";
 import SettingPage from "./pages/Setting";
 import UserProfile from "./pages/UserProfile";
-
+import OrderDetail from "./pages/OrderDetail";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -20,6 +20,10 @@ const router = createBrowserRouter([
       {
         path: "order",
         element: <OrderPage />,
+      },
+      {
+        path: "order/:orderId",
+        element: <OrderDetail />,
       },
       {
         path: "crm",

@@ -88,9 +88,15 @@ const UserProfile = () => {
         <table className="min-w-full border border-gray-300">
           <thead className="bg-gray-100">
             <tr>
-              <th className="border-b border-gray-300 px-4 py-2">Order ID</th>
-              <th className="border-b border-gray-300 px-4 py-2">Date</th>
-              <th className="border-b border-gray-300 px-4 py-2">Total</th>
+              <th className="border-b border-gray-300 px-4 py-2 text-left">
+                Order ID
+              </th>
+              <th className="border-b border-gray-300 px-4 py-2 text-left">
+                Date
+              </th>
+              <th className="border-b border-gray-300 px-4 py-2 text-left">
+                Total
+              </th>
             </tr>
           </thead>
           <tbody>
