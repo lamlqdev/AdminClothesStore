@@ -12,6 +12,17 @@ import ManageMembershipModal from "../Modal/ManageMembershipModal";
 export default function MembershipTable() {
   const [isModalDeleteOpen, setModalDeleteOpen] = useState(false);
   const [isModalManageOpen, setModalManageOpen] = useState(false);
+  const [membershipToEdit, setMembershipToEdit] = useState(null);
+
+  const handleCreateClick = () => {
+    setMembershipToEdit(null);
+    setModalManageOpen(true);
+  };
+
+  const handleEditClick = (membership) => {
+    setMembershipToEdit(membership);
+    setModalManageOpen(true);
+  };
 
   const TABLE_HEAD = [
     "Membership name",
@@ -24,20 +35,20 @@ export default function MembershipTable() {
     {
       id: 1,
       name: "Gold",
-      minSpend: "$1000",
-      discountRate: "10%",
+      minSpend: "1000",
+      discountRate: "10",
     },
     {
       id: 2,
       name: "Silver",
-      minSpend: "$500",
-      discountRate: "5%",
+      minSpend: "500",
+      discountRate: "5",
     },
     {
       id: 3,
       name: "Bronze",
-      minSpend: "$200",
-      discountRate: "2%",
+      minSpend: "200",
+      discountRate: "2",
     },
   ];
 
@@ -53,6 +64,8 @@ export default function MembershipTable() {
         <ManageMembershipModal
           open={isModalManageOpen}
           setOpen={setModalManageOpen}
+          membershipToEdit={membershipToEdit}
+          setMembershipToEdit={setMembershipToEdit}
         />
       )}
       <CardHeader floated={false} shadow={false} className="rounded-none">
@@ -64,7 +77,7 @@ export default function MembershipTable() {
           </div>
           <button
             className="bg-blue-500 hover:bg-blue-700 text-white text-sm py-2 px-4 rounded"
-            onClick={() => setModalManageOpen(true)}
+            onClick={handleCreateClick}
           >
             Create membership
           </button>
@@ -126,7 +139,7 @@ export default function MembershipTable() {
                   <div className="flex items-center space-x-2">
                     <button
                       className="bg-blue-400 hover:bg-blue-500 text-white py-1 px-3 rounded text-sm"
-                      onClick={() => setModalManageOpen(true)}
+                      onClick={() => handleEditClick(row)}
                     >
                       Edit
                     </button>

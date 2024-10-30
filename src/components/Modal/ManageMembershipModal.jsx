@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Dialog,
   DialogBackdrop,
@@ -6,27 +6,53 @@ import {
   DialogTitle,
 } from "@headlessui/react";
 
-export default function ManageMembershipModal({ open, setOpen }) {
+export default function ManageMembershipModal({
+  open,
+  setOpen,
+  membershipToEdit,
+  setMembershipToEdit,
+}) {
   const [membershipName, setMembershipName] = useState("");
   const [minimumSpend, setMinimumSpend] = useState("");
   const [discountRate, setDiscountRate] = useState("");
 
+  useEffect(() => {
+    if (membershipToEdit) {
+      setMembershipName(membershipToEdit.name);
+      setMinimumSpend(membershipToEdit.minSpend);
+      setDiscountRate(membershipToEdit.discountRate);
+    } else {
+      setMembershipName("");
+      setMinimumSpend("");
+      setDiscountRate("");
+    }
+  }, [membershipToEdit]);
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log({ membershipName, minimumSpend, discountRate });
+    if (membershipToEdit) {
+      console.log("Editting");
+    } else {
+      console.log("Add membership");
+    }
+    setOpen(false);
+    setMembershipToEdit(null);
   };
 
   return (
     <Dialog
       open={open}
-      onClose={() => setOpen(false)}
+      onClose={() => {
+        setOpen(false);
+        setMembershipToEdit(null);
+      }}
       className="relative z-10"
     >
       <DialogBackdrop className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
       <div className="fixed inset-0 flex items-center justify-center p-4">
         <DialogPanel className="w-full max-w-md rounded-lg bg-white shadow-lg p-6">
           <DialogTitle className="text-lg font-semibold text-center leading-6 text-gray-900">
-            Add New Membership
+            {membershipToEdit ? "Edit membership" : "Add membership"}
           </DialogTitle>
           <form onSubmit={handleSubmit} className="mt-4">
             <div>
@@ -89,7 +115,7 @@ export default function ManageMembershipModal({ open, setOpen }) {
                 type="submit"
                 className="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
               >
-                Add Membership
+                {membershipToEdit ? "Update" : "Add"}
               </button>
             </div>
           </form>
