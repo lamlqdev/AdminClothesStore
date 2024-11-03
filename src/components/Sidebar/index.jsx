@@ -9,37 +9,124 @@ import {
 } from "lucide-react";
 import SidebarLayout from "./Sidebar";
 import SidebarItem from "./SidebarItem";
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 
 export default function Sidebar() {
   return (
     <SidebarLayout>
-      <Link to="/">
+      <NavLink
+        to="/"
+        className={({ isActive }) =>
+          `relative flex items-center py-2 px-3 my-1
+          font-medium rounded-md cursor-pointer
+          transition-colors group
+          ${
+            isActive
+              ? "bg-gradient-to-tr from-indigo-200 to-indigo-100 text-indigo-800"
+              : "hover:bg-indigo-50 text-gray-600"
+          }`
+        }
+      >
         <SidebarItem icon={<LayoutDashboard size={20} />} text="Dashboard" />
-      </Link>
+      </NavLink>
 
-      <Link to="order">
+      <NavLink
+        to="order"
+        className={({ isActive }) =>
+          `relative flex items-center py-2 px-3 my-1
+          font-medium rounded-md cursor-pointer
+          transition-colors group
+          ${
+            isActive
+              ? "bg-gradient-to-tr from-indigo-200 to-indigo-100 text-indigo-800"
+              : "hover:bg-indigo-50 text-gray-600"
+          }`
+        }
+      >
         <SidebarItem icon={<ShoppingBag size={20} />} text="Orders" />
-      </Link>
+      </NavLink>
 
-      <Link to="crm">
+      <NavLink
+        to="crm"
+        className={({ isActive }) =>
+          `relative flex items-center py-2 px-3 my-1
+          font-medium rounded-md cursor-pointer
+          transition-colors group
+          ${
+            isActive
+              ? "bg-gradient-to-tr from-indigo-200 to-indigo-100 text-indigo-800"
+              : "hover:bg-indigo-50 text-gray-600"
+          }`
+        }
+      >
         <SidebarItem icon={<Users size={20} />} text="CRM" />
-      </Link>
+      </NavLink>
 
-      <Link to="ecommerce">
+      <NavLink
+        to="ecommerce"
+        className={({ isActive }) =>
+          `relative flex items-center py-2 px-3 my-1
+          font-medium rounded-md cursor-pointer
+          transition-colors group
+          ${
+            isActive
+              ? "bg-gradient-to-tr from-indigo-200 to-indigo-100 text-indigo-800"
+              : "hover:bg-indigo-50 text-gray-600"
+          }`
+        }
+      >
         <SidebarItem icon={<Store size={20} />} text="E-Commerce" />
-      </Link>
+      </NavLink>
 
-      <Link to="category">
+      <NavLink
+        to="category"
+        className={({ isActive }) =>
+          `relative flex items-center py-2 px-3 my-1
+          font-medium rounded-md cursor-pointer
+          transition-colors group
+          ${
+            isActive
+              ? "bg-gradient-to-tr from-indigo-200 to-indigo-100 text-indigo-800"
+              : "hover:bg-indigo-50 text-gray-600"
+          }`
+        }
+      >
         <SidebarItem icon={<PackageSearch size={20} />} text="Category" />
-      </Link>
+      </NavLink>
 
       <hr className="my-3" />
-      <Link to="setting">
-        <SidebarItem icon={<Settings size={20} />} text="Settings" />
-      </Link>
 
-      <SidebarItem icon={<HelpCircle size={20} />} text="Help" />
+      <NavLink
+        to="setting"
+        className={({ isActive }) =>
+          `relative flex items-center py-2 px-3 my-1
+          font-medium rounded-md cursor-pointer
+          transition-colors group
+          ${
+            isActive
+              ? "bg-gradient-to-tr from-indigo-200 to-indigo-100 text-indigo-800"
+              : "hover:bg-indigo-50 text-gray-600"
+          }`
+        }
+      >
+        <SidebarItem icon={<Settings size={20} />} text="Settings" />
+      </NavLink>
+
+      <NavLink
+        to="help"
+        className={({ isActive }) =>
+          `relative flex items-center py-2 px-3 my-1
+          font-medium rounded-md cursor-pointer
+          transition-colors group
+          ${
+            isActive
+              ? "bg-gradient-to-tr from-indigo-200 to-indigo-100 text-gray-600"
+              : "hover:bg-indigo-50 text-gray-600"
+          }`
+        }
+      >
+        <SidebarItem icon={<HelpCircle size={20} />} text="Help" />
+      </NavLink>
     </SidebarLayout>
   );
 }

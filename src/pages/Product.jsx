@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 
 export default function AddProduct() {
+  const [galleryImages, setGalleryImages] = useState([]);
   const [productData, setProductData] = useState({
     name: "",
     category: "",
@@ -29,9 +30,10 @@ export default function AddProduct() {
     setProductData({ ...productData, [name]: files[0] });
   };
 
-  const handleGalleryChange = (e) => {
-    const { files } = e.target;
-    setProductData({ ...productData, galleryImages: Array.from(files) });
+  const handleGalleryChange = (event) => {
+    const files = Array.from(event.target.files);
+    const newImages = files.map((file) => URL.createObjectURL(file));
+    setGalleryImages((prevImages) => [...prevImages, ...newImages]);
   };
 
   const handleSizeChange = (index, value) => {
@@ -153,9 +155,8 @@ export default function AddProduct() {
           />
         </div>
 
-        {/* Gallery Images */}
         <div>
-          <label className="block text-sm font-medium text-gray-700">
+          <label className="block text-sm font-medium text-gray-700 mb-2">
             Gallery Images
           </label>
           <input
@@ -163,8 +164,22 @@ export default function AddProduct() {
             name="galleryImages"
             onChange={handleGalleryChange}
             multiple
-            className="w-full mt-1"
+            accept="image/*"
+            className="w-full mt-1 mb-4"
           />
+
+          {/* Preview Gallery */}
+          <div className="flex flex-wrap gap-4">
+            {galleryImages.map((image, index) => (
+              <div key={index} className="w-24 h-24 overflow-hidden rounded-lg">
+                <img
+                  src={image}
+                  alt={`Preview ${index + 1}`}
+                  className="object-cover w-full h-full"
+                />
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* Sizes & Quantities */}
