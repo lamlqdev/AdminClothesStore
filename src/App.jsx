@@ -8,6 +8,8 @@ import CategoryPage from "./pages/Category";
 import SettingPage from "./pages/Setting";
 import UserProfile from "./pages/UserProfile";
 import OrderDetail from "./pages/OrderDetail";
+import AddProduct from "./pages/Product";
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -45,9 +47,14 @@ const router = createBrowserRouter([
         path: "user/:userId",
         element: <UserProfile />,
       },
+      {
+        path: "add-product",
+        element: <AddProduct />,
+      },
     ],
   },
 ]);
+
 function App() {
   return <RouterProvider router={router} />;
 }

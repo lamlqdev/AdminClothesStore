@@ -1,4 +1,5 @@
-import React from "react";
+import { useNavigate } from "react-router-dom";
+
 import {
   Card,
   CardBody,
@@ -8,7 +9,12 @@ import {
   Input,
   Button,
 } from "@material-tailwind/react";
-import { PencilIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
+
+import {
+  PencilIcon,
+  MagnifyingGlassIcon,
+  PlusIcon,
+} from "@heroicons/react/24/outline";
 
 export default function ProductTable() {
   const TABLE_HEAD = [
@@ -53,6 +59,12 @@ export default function ProductTable() {
 
   const categories = ["All", "Clothing", "Footwear", "Accessories"];
 
+  const navigate = useNavigate();
+
+  const handleAddProduct = () => {
+    navigate("/add-product");
+  };
+
   return (
     <Card className="h-full w-full">
       <CardHeader floated={false} shadow={false} className="rounded-none">
@@ -80,6 +92,14 @@ export default function ProductTable() {
               <MagnifyingGlassIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-500" />
             </div>
           </div>
+          <Button
+            className="flex items-center gap-2"
+            onClick={handleAddProduct}
+            color="blue"
+          >
+            <PlusIcon className="h-5 w-5" />
+            Add Product
+          </Button>
         </div>
       </CardHeader>
 
