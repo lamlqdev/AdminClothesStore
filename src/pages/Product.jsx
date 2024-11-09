@@ -1,51 +1,137 @@
 import React, { useState } from "react";
+import { Trash } from "lucide-react";
+import { collection, addDoc, getDocs } from "firebase/firestore";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { db, storage } from "../firebase";
+import { useLoaderData, useNavigate } from "react-router-dom";
 
 export default function AddProduct() {
-  const [galleryImages, setGalleryImages] = useState([]);
-  const [productData, setProductData] = useState({
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState({
     name: "",
     category: "",
-    brand: "",
     price: "",
     discount: "",
     description: "",
-    mainImage: null,
-    galleryImages: [],
-    sizes: [
-      { size: "S", quantity: 0 },
-      { size: "M", quantity: 0 },
-      { size: "L", quantity: 0 },
-    ],
-    tags: "",
     status: "Available",
   });
+  const [sizes, setSizes] = useState([{ size: "", quantity: "" }]);
+  const [mainImage, setMainImage] = useState(null);
+  const [mainImagePreview, setMainImagePreview] = useState(null);
+  const [galleryImages, setGalleryImages] = useState([]);
+  const [galleryImagePreviews, setGalleryImagePreviews] = useState([]);
+
+  const categories = useLoaderData();
+  const categoryOptions = categories.map((category) => ({
+    id: category.id,
+    categoryName: category.name,
+  }));
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setProductData({ ...productData, [name]: value });
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
   };
 
-  const handleImageChange = (e) => {
-    const { name, files } = e.target;
-    setProductData({ ...productData, [name]: files[0] });
+  const handleMainImageChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setMainImage(file);
+        setMainImagePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
-  const handleGalleryChange = (event) => {
+  const removeMainImage = () => {
+    setMainImage(null);
+    setMainImagePreview(null);
+    document.getElementById("mainImage").value = "";
+  };
+
+  const handleGalleryImagesChange = (event) => {
     const files = Array.from(event.target.files);
-    const newImages = files.map((file) => URL.createObjectURL(file));
-    setGalleryImages((prevImages) => [...prevImages, ...newImages]);
+    const newGalleryImages = [...galleryImages];
+    const newGalleryImagePreviews = [...galleryImagePreviews];
+
+    files.forEach((file) => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        newGalleryImages.push(file);
+        newGalleryImagePreviews.push(reader.result);
+        setGalleryImages(newGalleryImages);
+        setGalleryImagePreviews(newGalleryImagePreviews);
+      };
+      reader.readAsDataURL(file);
+    });
   };
 
-  const handleSizeChange = (index, value) => {
-    const updatedSizes = productData.sizes.map((size, i) =>
-      i === index ? { ...size, quantity: parseInt(value) } : size
+  const removeGalleryImage = (index) => {
+    const newGalleryImages = galleryImages.filter((_, i) => i !== index);
+    const newGalleryImagePreviews = galleryImagePreviews.filter(
+      (_, i) => i !== index
     );
-    setProductData({ ...productData, sizes: updatedSizes });
+    setGalleryImages(newGalleryImages);
+    setGalleryImagePreviews(newGalleryImagePreviews);
   };
 
-  const handleSubmit = (e) => {
+  const handleAddSize = () => {
+    setSizes([...sizes, { size: "", quantity: "" }]);
+  };
+
+  const handleRemoveSize = (index) => {
+    const newSizes = sizes.filter((_, i) => i !== index);
+    setSizes(newSizes);
+  };
+
+  const handleSizeChange = (index, event) => {
+    const newSizes = sizes.map((size, i) => {
+      if (i === index) {
+        return { ...size, [event.target.name]: event.target.value };
+      }
+      return size;
+    });
+    setSizes(newSizes);
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Product Data:", productData);
+    try {
+      // Upload main image
+      let mainImageUrl = null;
+      if (mainImage) {
+        const mainImageRef = ref(storage, `products/${mainImage.name}`);
+        await uploadBytes(mainImageRef, mainImage);
+        mainImageUrl = await getDownloadURL(mainImageRef);
+      }
+
+      // Upload gallery images
+      const galleryImageUrls = await Promise.all(
+        galleryImages.map(async (image) => {
+          const imageRef = ref(storage, `products/${image.name}`);
+          await uploadBytes(imageRef, image);
+          return await getDownloadURL(imageRef);
+        })
+      );
+
+      // Save product data to Firestore
+      const productData = {
+        ...formData,
+        sizes,
+        mainImage: mainImageUrl,
+        galleryImages: galleryImageUrls,
+      };
+      await addDoc(collection(db, "NewProducts"), productData);
+      alert("Product added successfully");
+      navigate("/ecommerce");
+    } catch (error) {
+      console.error("Error adding product: ", error);
+      alert("Error adding product");
+    }
   };
 
   return (
@@ -62,9 +148,11 @@ export default function AddProduct() {
           </label>
           <input
             type="text"
+            id="name"
             name="name"
-            value={productData.name}
+            value={formData.name}
             onChange={handleChange}
+            required
             className="w-full mt-1 p-2 border border-gray-300 rounded-md"
           />
         </div>
@@ -75,30 +163,19 @@ export default function AddProduct() {
             Category
           </label>
           <select
+            id="category"
             name="category"
-            value={productData.category}
+            value={formData.category}
             onChange={handleChange}
+            required
             className="w-full mt-1 p-2 border border-gray-300 rounded-md"
           >
-            <option value="">Select Category</option>
-            <option value="Clothing">Clothing</option>
-            <option value="Footwear">Footwear</option>
-            <option value="Accessories">Accessories</option>
+            {categoryOptions.map((category) => (
+              <option key={category.id} value={category.categoryName}>
+                {category.categoryName}
+              </option>
+            ))}
           </select>
-        </div>
-
-        {/* Brand */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700">
-            Brand
-          </label>
-          <input
-            type="text"
-            name="brand"
-            value={productData.brand}
-            onChange={handleChange}
-            className="w-full mt-1 p-2 border border-gray-300 rounded-md"
-          />
         </div>
 
         {/* Price & Discount */}
@@ -109,9 +186,11 @@ export default function AddProduct() {
             </label>
             <input
               type="number"
+              id="price"
               name="price"
-              value={productData.price}
+              value={formData.price}
               onChange={handleChange}
+              required
               className="w-full mt-1 p-2 border border-gray-300 rounded-md"
             />
           </div>
@@ -121,9 +200,11 @@ export default function AddProduct() {
             </label>
             <input
               type="number"
+              id="discount"
               name="discount"
-              value={productData.discount}
+              value={formData.discount}
               onChange={handleChange}
+              required
               className="w-full mt-1 p-2 border border-gray-300 rounded-md"
             />
           </div>
@@ -135,9 +216,11 @@ export default function AddProduct() {
             Description
           </label>
           <textarea
+            id="description"
             name="description"
-            value={productData.description}
+            value={formData.description}
             onChange={handleChange}
+            required
             className="w-full mt-1 p-2 border border-gray-300 rounded-md"
           ></textarea>
         </div>
@@ -149,70 +232,103 @@ export default function AddProduct() {
           </label>
           <input
             type="file"
+            id="mainImage"
             name="mainImage"
-            onChange={handleImageChange}
             className="w-full mt-1"
+            onChange={handleMainImageChange}
           />
+          {mainImagePreview && (
+            <div className="mt-2">
+              <img
+                src={mainImagePreview}
+                alt="Main Preview"
+                className="w-36 h-36 object-cover rounded-md"
+              />
+              <button
+                type="button"
+                className="mt-2 px-2 py-1 bg-red-500 text-white text-sm rounded"
+                onClick={removeMainImage}
+              >
+                Remove
+              </button>
+            </div>
+          )}
         </div>
 
+        {/* Gallery Images */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Gallery Images
           </label>
           <input
             type="file"
+            id="galleryImages"
             name="galleryImages"
-            onChange={handleGalleryChange}
+            className="w-full mt-1"
             multiple
-            accept="image/*"
-            className="w-full mt-1 mb-4"
+            onChange={handleGalleryImagesChange}
           />
-
-          {/* Preview Gallery */}
-          <div className="flex flex-wrap gap-4">
-            {galleryImages.map((image, index) => (
-              <div key={index} className="w-24 h-24 overflow-hidden rounded-lg">
+          <div className="mt-2 grid grid-cols-3 gap-1">
+            {galleryImagePreviews.map((preview, index) => (
+              <div key={index} className="relative">
                 <img
-                  src={image}
-                  alt={`Preview ${index + 1}`}
-                  className="object-cover w-full h-full"
+                  src={preview}
+                  alt={`Gallery Preview ${index + 1}`}
+                  className="w-36 h-36 object-cover rounded-md"
                 />
+                <button
+                  type="button"
+                  className="px-2 py-1 bg-red-500 text-white text-xs rounded"
+                  onClick={() => removeGalleryImage(index)}
+                >
+                  Remove
+                </button>
               </div>
             ))}
           </div>
         </div>
 
-        {/* Sizes & Quantities */}
+        {/* Sizes and Quantities */}
         <div>
           <label className="block text-sm font-medium text-gray-700">
-            Sizes & Quantities
+            Sizes and Quantities
           </label>
-          {productData.sizes.map((size, index) => (
-            <div key={index} className="flex items-center space-x-4 mt-1">
-              <span className="w-16">{size.size}</span>
+          {sizes.map((size, index) => (
+            <div key={index} className="flex items-center mb-2">
+              <input
+                type="text"
+                id="size"
+                name="size"
+                value={size.size}
+                onChange={(e) => handleSizeChange(index, e)}
+                placeholder="Size"
+                className="w-full mt-1 p-2 border border-gray-300 rounded-md mr-2"
+              />
               <input
                 type="number"
+                id="quantity"
+                name="quantity"
                 value={size.quantity}
-                onChange={(e) => handleSizeChange(index, e.target.value)}
-                className="w-full p-2 border border-gray-300 rounded-md"
+                onChange={(e) => handleSizeChange(index, e)}
+                placeholder="Quantity"
+                className="w-full mt-1 p-2 border border-gray-300 rounded-md mr-2"
               />
+              <button
+                type="button"
+                onClick={() => handleRemoveSize(index)}
+                className="py-2 px-4 text-red-500 hover:text-red-600 transition duration-200"
+              >
+                <Trash />
+              </button>
             </div>
           ))}
-        </div>
-
-        {/* Tags */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700">
-            Tags
-          </label>
-          <input
-            type="text"
-            name="tags"
-            value={productData.tags}
-            onChange={handleChange}
-            className="w-full mt-1 p-2 border border-gray-300 rounded-md"
-            placeholder="e.g., Summer, Sale, New Arrival"
-          />
+          <button
+            type="button"
+            onClick={handleAddSize}
+            className="py-2 px-4 bg-green-500 text-white rounded-md hover:bg-green-600 transition duration-200"
+          >
+            Add Size
+          </button>
         </div>
 
         {/* Status */}
@@ -221,8 +337,9 @@ export default function AddProduct() {
             Status
           </label>
           <select
+            id="status"
             name="status"
-            value={productData.status}
+            value={formData.status}
             onChange={handleChange}
             className="w-full mt-1 p-2 border border-gray-300 rounded-md"
           >
@@ -241,4 +358,14 @@ export default function AddProduct() {
       </form>
     </div>
   );
+}
+
+export async function loader() {
+  const categoriesSnapshot = await getDocs(collection(db, "Categories"));
+  const categories = categoriesSnapshot.docs.map((doc) => ({
+    id: doc.id,
+    ...doc.data(),
+  }));
+
+  return categories;
 }
