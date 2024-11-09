@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Card,
   CardBody,
@@ -11,6 +11,12 @@ import { Link } from "react-router-dom";
 
 export default function UserInfoTable({ users }) {
   const TABLE_HEAD = ["User ID", "Name", "Email", "Membership", "Actions"];
+
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const filteredUsers = users.filter((user) =>
+    user.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <Card className="h-full w-full">
@@ -26,6 +32,8 @@ export default function UserInfoTable({ users }) {
               <Input
                 placeholder="Search user..."
                 className="border border-gray-300 rounded-lg shadow-sm pl-4 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-300"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)} // Cập nhật giá trị tìm kiếm
               />
               <MagnifyingGlassIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-500" />
             </div>
@@ -55,53 +63,63 @@ export default function UserInfoTable({ users }) {
           </thead>
 
           <tbody>
-            {users.map((user) => (
-              <tr key={user.id} className="even:bg-blue-gray-50/50">
-                <td className="p-4 border-b border-blue-gray-100">
-                  <Typography
-                    variant="small"
-                    color="blue-gray"
-                    className="font-normal"
-                  >
-                    {user.id}
-                  </Typography>
-                </td>
-                <td className="p-4 border-b border-blue-gray-100">
-                  <Typography
-                    variant="small"
-                    color="blue-gray"
-                    className="font-normal"
-                  >
-                    {user.name}
-                  </Typography>
-                </td>
-                <td className="p-4 border-b border-blue-gray-100">
-                  <Typography
-                    variant="small"
-                    color="blue-gray"
-                    className="font-normal"
-                  >
-                    {user.email ? user.email : "No email"}
-                  </Typography>
-                </td>
-                <td className="p-4 border-b border-blue-gray-100">
-                  <Typography
-                    variant="small"
-                    color="blue-gray"
-                    className="font-normal"
-                  >
-                    {user.membershipId ? user.membershipId : "Normal Customer"}
-                  </Typography>
-                </td>
-                <td className="p-4 border-b border-blue-gray-100">
-                  <Link to={user.id}>
-                    <button className="bg-blue-500 hover:bg-blue-600 text-white py-1 px-3 rounded text-sm">
-                      View Details
-                    </button>
-                  </Link>
+            {filteredUsers.length === 0 ? (
+              <tr>
+                <td colSpan="5" className="p-4 text-center text-gray-500">
+                  No users found.
                 </td>
               </tr>
-            ))}
+            ) : (
+              filteredUsers.map((user) => (
+                <tr key={user.id} className="even:bg-blue-gray-50/50">
+                  <td className="p-4 border-b border-blue-gray-100">
+                    <Typography
+                      variant="small"
+                      color="blue-gray"
+                      className="font-normal"
+                    >
+                      {user.id}
+                    </Typography>
+                  </td>
+                  <td className="p-4 border-b border-blue-gray-100">
+                    <Typography
+                      variant="small"
+                      color="blue-gray"
+                      className="font-normal"
+                    >
+                      {user.name}
+                    </Typography>
+                  </td>
+                  <td className="p-4 border-b border-blue-gray-100">
+                    <Typography
+                      variant="small"
+                      color="blue-gray"
+                      className="font-normal"
+                    >
+                      {user.email ? user.email : "No email"}
+                    </Typography>
+                  </td>
+                  <td className="p-4 border-b border-blue-gray-100">
+                    <Typography
+                      variant="small"
+                      color="blue-gray"
+                      className="font-normal"
+                    >
+                      {user.membershipId
+                        ? user.membershipId
+                        : "Normal Customer"}
+                    </Typography>
+                  </td>
+                  <td className="p-4 border-b border-blue-gray-100">
+                    <Link to={user.id}>
+                      <button className="bg-blue-500 hover:bg-blue-600 text-white py-1 px-3 rounded text-sm">
+                        View Details
+                      </button>
+                    </Link>
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </CardBody>
