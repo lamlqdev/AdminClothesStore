@@ -10,6 +10,7 @@ import UserProfile from "./pages/UserProfile";
 import OrderDetail from "./pages/OrderDetail";
 import AddProduct from "./pages/Product";
 import { loader as membershipLoader } from "./pages/CustomerRelationshipManagement";
+import { loader as categoriesLoader } from "./pages/Category";
 
 const router = createBrowserRouter([
   {
@@ -40,6 +41,7 @@ const router = createBrowserRouter([
       {
         path: "category",
         element: <CategoryPage />,
+        loader: categoriesLoader,
       },
       {
         path: "setting",
