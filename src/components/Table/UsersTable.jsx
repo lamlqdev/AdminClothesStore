@@ -7,36 +7,10 @@ import {
   Input,
 } from "@material-tailwind/react";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
-export default function UserInfoTable() {
+export default function UserInfoTable({ users }) {
   const TABLE_HEAD = ["User ID", "Name", "Email", "Membership", "Actions"];
-  const navigate = useNavigate();
-  
-  const USERS = [
-    {
-      userId: "U123456",
-      name: "John Doe",
-      email: "john.doe@example.com",
-      membership: "Gold",
-    },
-    {
-      userId: "U654321",
-      name: "Jane Smith",
-      email: "jane.smith@example.com",
-      membership: "Silver",
-    },
-    {
-      userId: "U789012",
-      name: "Alice Johnson",
-      email: "alice.johnson@example.com",
-      membership: "Platinum",
-    },
-  ];
-
-  const handleViewDetails = (userId) => {
-    navigate(`/user/${userId}`); // Chuyển hướng đến trang thông tin cá nhân
-  };
 
   return (
     <Card className="h-full w-full">
@@ -81,15 +55,15 @@ export default function UserInfoTable() {
           </thead>
 
           <tbody>
-            {USERS.map((user) => (
-              <tr key={user.userId} className="even:bg-blue-gray-50/50">
+            {users.map((user) => (
+              <tr key={user.id} className="even:bg-blue-gray-50/50">
                 <td className="p-4 border-b border-blue-gray-100">
                   <Typography
                     variant="small"
                     color="blue-gray"
                     className="font-normal"
                   >
-                    {user.userId}
+                    {user.id}
                   </Typography>
                 </td>
                 <td className="p-4 border-b border-blue-gray-100">
@@ -107,7 +81,7 @@ export default function UserInfoTable() {
                     color="blue-gray"
                     className="font-normal"
                   >
-                    {user.email}
+                    {user.email ? user.email : "No email"}
                   </Typography>
                 </td>
                 <td className="p-4 border-b border-blue-gray-100">
@@ -116,16 +90,15 @@ export default function UserInfoTable() {
                     color="blue-gray"
                     className="font-normal"
                   >
-                    {user.membership}
+                    {user.membershipId ? user.membershipId : "Normal Customer"}
                   </Typography>
                 </td>
                 <td className="p-4 border-b border-blue-gray-100">
-                  <button
-                    onClick={() => handleViewDetails(user.userId)}
-                    className="bg-blue-500 hover:bg-blue-600 text-white py-1 px-3 rounded text-sm"
-                  >
-                    View Details
-                  </button>
+                  <Link to={user.id}>
+                    <button className="bg-blue-500 hover:bg-blue-600 text-white py-1 px-3 rounded text-sm">
+                      View Details
+                    </button>
+                  </Link>
                 </td>
               </tr>
             ))}

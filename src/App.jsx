@@ -11,7 +11,7 @@ import OrderDetail from "./pages/OrderDetail";
 import AddProduct from "./pages/Product";
 import { loader as membershipLoader } from "./pages/CustomerRelationshipManagement";
 import { loader as categoriesLoader } from "./pages/Category";
-
+import { loader as userLoader } from "./pages/UserProfile";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -35,6 +35,11 @@ const router = createBrowserRouter([
         loader: membershipLoader,
       },
       {
+        path: "crm/:userId",
+        element: <UserProfile />,
+        loader: userLoader,
+      },
+      {
         path: "ecommerce",
         element: <ECommercePage />,
       },
@@ -47,10 +52,7 @@ const router = createBrowserRouter([
         path: "setting",
         element: <SettingPage />,
       },
-      {
-        path: "user/:userId",
-        element: <UserProfile />,
-      },
+
       {
         path: "add-product",
         element: <AddProduct />,

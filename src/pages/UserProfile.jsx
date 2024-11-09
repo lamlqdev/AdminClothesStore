@@ -1,29 +1,18 @@
-import React from "react";
-import { User, Home, Shield, ShoppingCart, FileText } from "lucide-react";
+import { User, Home, Shield, ShoppingCart } from "lucide-react";
 import Breadcrumb from "../components/Breadcrump";
+import { useLoaderData } from "react-router-dom";
+import {
+  doc,
+  getDoc,
+  query,
+  collection,
+  where,
+  getDocs,
+} from "firebase/firestore";
+import { db } from "../firebase";
 
 const UserProfile = () => {
-  const user = {
-    userId: "U123456",
-    name: "John Doe",
-    email: "john.doe@example.com",
-    phone: "123-456-7890",
-    birthDate: "01/01/1990",
-    address: {
-      street: "123 Main St",
-      city: "City",
-      country: "Country",
-    },
-    membership: {
-      status: "Gold",
-      joinDate: "01/01/2020",
-    },
-    orderHistory: [
-      { orderId: "O001", date: "01/10/2024", total: "$150.00" },
-      { orderId: "O002", date: "15/09/2024", total: "$75.00" },
-    ],
-    notes: "Customer requests to call before delivery.",
-  };
+  const { user, orders } = useLoaderData();
 
   return (
     <div className="container mx-auto p-6 font-poppins">
@@ -43,13 +32,14 @@ const UserProfile = () => {
           <strong>User ID:</strong> {user.userId}
         </p>
         <p>
-          <strong>Email:</strong> {user.email}
+          <strong>Email:</strong> {user.email ? user.email : "N/A"}
         </p>
         <p>
-          <strong>Phone:</strong> {user.phone}
+          <strong>Phone:</strong>{" "}
+          {user.phonelist.length > 0 ? user.phonelist[0] : "N/A"}
         </p>
         <p>
-          <strong>Birth Date:</strong> {user.birthDate}
+          <strong>Birth Date:</strong> {user.birthDate ? user.birthDate : "N/A"}
         </p>
       </div>
 
@@ -59,10 +49,18 @@ const UserProfile = () => {
           <Home className="h-6 w-6 mr-2 text-blue-600" />
           Shipping Address
         </h2>
-        <p>
-          <strong>Address:</strong> {user.address.street}, {user.address.city},{" "}
-          {user.address.country}
-        </p>
+        {user.addresslist.length > 0 ? (
+          user.addresslist.map((address, index) => (
+            <div key={index}>
+              <p>
+                <strong>Address {index + 1}:</strong> {address.street},{" "}
+                {address.ward}, {address.city}, {address.province}
+              </p>
+            </div>
+          ))
+        ) : (
+          <p>N/A</p>
+        )}
       </div>
 
       {/* Membership Information */}
@@ -72,10 +70,11 @@ const UserProfile = () => {
           Membership Information
         </h2>
         <p>
-          <strong>Membership Status:</strong> {user.membership.status}
+          <strong>Membership Status:</strong>{" "}
+          {user.membershipId ? user.membershipId : "Normal Customer"}
         </p>
         <p>
-          <strong>Join Date:</strong> {user.membership.joinDate}
+          <strong>Join Date:</strong> {user.createdAt ? user.createdAt : "N/A"}
         </p>
       </div>
 
@@ -85,45 +84,70 @@ const UserProfile = () => {
           <ShoppingCart className="h-6 w-6 mr-2 text-blue-600" />
           Order History
         </h2>
-        <table className="min-w-full border border-gray-300">
-          <thead className="bg-gray-100">
-            <tr>
-              <th className="border-b border-gray-300 px-4 py-2 text-left">
-                Order ID
-              </th>
-              <th className="border-b border-gray-300 px-4 py-2 text-left">
-                Date
-              </th>
-              <th className="border-b border-gray-300 px-4 py-2 text-left">
-                Total
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {user.orderHistory.map((order) => (
-              <tr
-                key={order.orderId}
-                className="border-b border-gray-300 hover:bg-gray-100 transition duration-200"
-              >
-                <td className="px-4 py-2">{order.orderId}</td>
-                <td className="px-4 py-2">{order.date}</td>
-                <td className="px-4 py-2">{order.total}</td>
+        {orders.length > 0 ? (
+          <table className="min-w-full border border-gray-300">
+            <thead className="bg-gray-100">
+              <tr>
+                <th className="border-b border-gray-300 px-4 py-2 text-left">
+                  Order ID
+                </th>
+                <th className="border-b border-gray-300 px-4 py-2 text-left">
+                  Date
+                </th>
+                <th className="border-b border-gray-300 px-4 py-2 text-left">
+                  Status
+                </th>
+                <th className="border-b border-gray-300 px-4 py-2 text-left">
+                  Total
+                </th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      {/* Notes */}
-      <div className="bg-white p-6 rounded-lg shadow-md">
-        <h2 className="text-2xl font-semibold mb-4 flex items-center">
-          <FileText className="h-6 w-6 mr-2 text-blue-600" />
-          Notes
-        </h2>
-        <p>{user.notes}</p>
+            </thead>
+            <tbody>
+              {orders.map((order) => (
+                <tr
+                  key={order.orderId}
+                  className="border-b border-gray-300 hover:bg-gray-100 transition duration-200"
+                >
+                  <td className="px-4 py-2">{order.orderId}</td>
+                  <td className="px-4 py-2">
+                    {order.orderTime?.toDate().toLocaleDateString("en-GB")}
+                  </td>
+                  <td className="px-4 py-2">{order.orderStatus}</td>
+                  <td className="px-4 py-2">{order.total}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          <p>No orders found.</p>
+        )}
       </div>
     </div>
   );
 };
 
 export default UserProfile;
+
+export async function loader({ params }) {
+  const userId = params.userId;
+
+  // Lấy thông tin user
+  const userDoc = await getDoc(doc(db, "users", userId));
+  if (!userDoc.exists()) {
+    throw new Error("User not found");
+  }
+  const user = { id: userDoc.id, ...userDoc.data() };
+
+  // Lấy danh sách các đơn hàng của user
+  const ordersQuery = query(
+    collection(db, "Orders"),
+    where("userId", "==", userId)
+  );
+  const ordersSnapshot = await getDocs(ordersQuery);
+  const orders = ordersSnapshot.docs.map((doc) => ({
+    orderId: doc.id,
+    ...doc.data(),
+  }));
+
+  return { user, orders };
+}

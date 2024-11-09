@@ -6,26 +6,33 @@ import { getDocs, collection } from "firebase/firestore";
 import { db } from "../firebase";
 
 export default function CustomerRelationshipManagementPage() {
-  const memberships = useLoaderData();
+  const { memberships, users } = useLoaderData();
   return (
     <>
       <Breadcrumb pageName="CRM" />
       <div className="space-y-8">
         <MembershipTable memberships={memberships} />
-        <UserInfoTable />
+        <UserInfoTable users={users} />
       </div>
     </>
   );
 }
 
 export async function loader() {
-  const querySnapshot = await getDocs(collection(db, "Membership"));
-
-  const memberships = querySnapshot.docs.map((doc) => ({
+  const membershipQuerySnapshot = await getDocs(collection(db, "Membership"));
+  const memberships = membershipQuerySnapshot.docs.map((doc) => ({
     id: doc.id,
     ...doc.data(),
   }));
 
-  console.log(memberships);
-  return memberships;
+  const userQuerySnapshot = await getDocs(collection(db, "users"));
+  const users = userQuerySnapshot.docs.map((doc) => ({
+    id: doc.id,
+    ...doc.data(),
+  }));
+
+  console.log("Memberships:", memberships);
+  console.log("Users:", users);
+
+  return { memberships, users };
 }
