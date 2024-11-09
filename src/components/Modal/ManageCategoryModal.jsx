@@ -24,6 +24,8 @@ export default function CategoryModal({ open, setOpen, category }) {
     const formData = new FormData(event.target);
     const id = formData.get("id");
     const name = formData.get("name");
+    const icon = formData.get("icon");
+    const library = formData.get("library");
 
     try {
       if (category) {
@@ -31,12 +33,16 @@ export default function CategoryModal({ open, setOpen, category }) {
         await updateDoc(categoryRef, {
           categoryId: id,
           name,
+          icon,
+          library,
           updatedAt: serverTimestamp(),
         });
       } else {
         await addDoc(collection(db, "Categories"), {
           categoryId: id,
           name,
+          icon,
+          library,
           isVisible: true,
           createdAt: serverTimestamp(),
         });
@@ -92,6 +98,56 @@ export default function CategoryModal({ open, setOpen, category }) {
                 id="name"
                 name="name"
                 defaultValue={category ? category.name : ""}
+                required
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500"
+              />
+            </div>
+            <div className="mt-4">
+              <p className="text-sm ">
+                Choose an icon for your category. This icon will be displayed in
+                the mobile app for customers. Check out the icon you like from
+                the link below:
+              </p>
+              <p>
+                <a
+                  href="https://oblador.github.io/react-native-vector-icons/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 text-sm"
+                >
+                  https://oblador.github.io/react-native-vector-icons/
+                </a>
+              </p>
+            </div>
+            <div className="mt-4">
+              <label
+                htmlFor="icon"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Category Icon Name
+              </label>
+              <input
+                type="text"
+                id="icon"
+                name="icon"
+                defaultValue={category ? category.icon : ""}
+                required
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500"
+              />
+            </div>
+
+            <div className="mt-4">
+              <label
+                htmlFor="name"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Category Icon Library
+              </label>
+              <input
+                type="text"
+                id="library"
+                name="library"
+                defaultValue={category ? category.library : ""}
                 required
                 className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500"
               />
