@@ -16,7 +16,7 @@ import {
   PlusIcon,
 } from "@heroicons/react/24/outline";
 
-export default function ProductTable() {
+export default function ProductTable({ products, categories }) {
   const TABLE_HEAD = [
     "ID Product",
     "Product Name",
@@ -26,43 +26,18 @@ export default function ProductTable() {
     "Action",
   ];
 
-  const PRODUCTS = [
-    {
-      id: "P001",
-      name: "T-Shirt",
-      category: "Clothing",
-      price: "$20",
-      quantity: 50,
-    },
-    {
-      id: "P002",
-      name: "Jeans",
-      category: "Clothing",
-      price: "$40",
-      quantity: 30,
-    },
-    {
-      id: "P003",
-      name: "Sneakers",
-      category: "Footwear",
-      price: "$60",
-      quantity: 20,
-    },
-    {
-      id: "P004",
-      name: "Hat",
-      category: "Accessories",
-      price: "$15",
-      quantity: 100,
-    },
+  const categoryOptions = [
+    { id: "all", categoryName: "All" },
+    ...categories.map((category) => ({
+      id: category.id,
+      categoryName: category.name,
+    })),
   ];
-
-  const categories = ["All", "Clothing", "Footwear", "Accessories"];
 
   const navigate = useNavigate();
 
   const handleAddProduct = () => {
-    navigate("/add-product");
+    navigate("add-product");
   };
 
   return (
@@ -76,9 +51,9 @@ export default function ProductTable() {
           </div>
           <div className="w-full md:w-1/3 lg:w-1/4">
             <select className="border border-gray-300 rounded-lg shadow-sm px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-300">
-              {categories.map((category) => (
-                <option key={category} value={category}>
-                  {category}
+              {categoryOptions.map((category) => (
+                <option key={category.id} value={category.categoryName}>
+                  {category.categoryName}
                 </option>
               ))}
             </select>
@@ -125,7 +100,7 @@ export default function ProductTable() {
           </thead>
 
           <tbody>
-            {PRODUCTS.map((product) => (
+            {products.map((product) => (
               <tr key={product.id} className="even:bg-blue-gray-50/50">
                 <td className="p-4 border-b border-blue-gray-100">
                   <Typography
@@ -151,7 +126,7 @@ export default function ProductTable() {
                     color="blue-gray"
                     className="font-normal"
                   >
-                    {product.category}
+                    {product.categoryId}
                   </Typography>
                 </td>
                 <td className="p-4 border-b border-blue-gray-100">
@@ -169,7 +144,7 @@ export default function ProductTable() {
                     color="blue-gray"
                     className="font-normal"
                   >
-                    {product.quantity}
+                    {product.quantity || "N/A"}
                   </Typography>
                 </td>
                 <td className="p-4 border-b border-blue-gray-100">
