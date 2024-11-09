@@ -9,6 +9,7 @@ import SettingPage from "./pages/Setting";
 import UserProfile from "./pages/UserProfile";
 import OrderDetail from "./pages/OrderDetail";
 import AddProduct from "./pages/Product";
+import { loader as membershipLoader } from "./pages/CustomerRelationshipManagement";
 
 const router = createBrowserRouter([
   {
@@ -30,6 +31,7 @@ const router = createBrowserRouter([
       {
         path: "crm",
         element: <CustomerRelationshipManagementPage />,
+        loader: membershipLoader,
       },
       {
         path: "ecommerce",

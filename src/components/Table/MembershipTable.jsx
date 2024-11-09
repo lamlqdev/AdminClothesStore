@@ -9,7 +9,7 @@ import { useState } from "react";
 import DeleteMembershipModal from "../Modal/DeleteMembershipModal";
 import ManageMembershipModal from "../Modal/ManageMembershipModal";
 
-export default function MembershipTable() {
+export default function MembershipTable({ memberships }) {
   const [isModalDeleteOpen, setModalDeleteOpen] = useState(false);
   const [isModalManageOpen, setModalManageOpen] = useState(false);
   const [membershipToEdit, setMembershipToEdit] = useState(null);
@@ -24,32 +24,16 @@ export default function MembershipTable() {
     setModalManageOpen(true);
   };
 
+  const handleDeleteClick = (membership) => {
+    setMembershipToEdit(membership);
+    setModalDeleteOpen(true);
+  };
+
   const TABLE_HEAD = [
     "Membership name",
     "Minimum spend amount",
     "Discount rate",
     "Manage",
-  ];
-
-  const TABLE_ROW = [
-    {
-      id: 1,
-      name: "Gold",
-      minSpend: "1000",
-      discountRate: "10",
-    },
-    {
-      id: 2,
-      name: "Silver",
-      minSpend: "500",
-      discountRate: "5",
-    },
-    {
-      id: 3,
-      name: "Bronze",
-      minSpend: "200",
-      discountRate: "2",
-    },
   ];
 
   return (
@@ -58,14 +42,14 @@ export default function MembershipTable() {
         <DeleteMembershipModal
           open={isModalDeleteOpen}
           setOpen={setModalDeleteOpen}
+          membership={membershipToEdit}
         />
       )}
       {isModalManageOpen && (
         <ManageMembershipModal
           open={isModalManageOpen}
           setOpen={setModalManageOpen}
-          membershipToEdit={membershipToEdit}
-          setMembershipToEdit={setMembershipToEdit}
+          membership={membershipToEdit}
         />
       )}
       <CardHeader floated={false} shadow={false} className="rounded-none">
@@ -106,15 +90,15 @@ export default function MembershipTable() {
           </thead>
 
           <tbody>
-            {TABLE_ROW.map((row) => (
-              <tr key={row.id} className="even:bg-blue-gray-50/50">
+            {memberships.map((membership) => (
+              <tr key={membership.id} className="even:bg-blue-gray-50/50">
                 <td className="p-4 border-b border-blue-gray-100">
                   <Typography
                     variant="small"
                     color="blue-gray"
                     className="font-normal"
                   >
-                    {row.name}
+                    {membership.membershipName}
                   </Typography>
                 </td>
                 <td className="p-4 border-b border-blue-gray-100">
@@ -123,7 +107,7 @@ export default function MembershipTable() {
                     color="blue-gray"
                     className="font-normal"
                   >
-                    {row.minSpend}
+                    {`${membership.minimumSpend} VND`}
                   </Typography>
                 </td>
                 <td className="p-4 border-b border-blue-gray-100">
@@ -132,20 +116,20 @@ export default function MembershipTable() {
                     color="blue-gray"
                     className="font-normal"
                   >
-                    {row.discountRate}
+                    {`${membership.discountRate} %`}
                   </Typography>
                 </td>
                 <td className="p-4 border-b border-blue-gray-100">
                   <div className="flex items-center space-x-2">
                     <button
                       className="bg-blue-400 hover:bg-blue-500 text-white py-1 px-3 rounded text-sm"
-                      onClick={() => handleEditClick(row)}
+                      onClick={() => handleEditClick(membership)}
                     >
                       Edit
                     </button>
                     <button
                       className="bg-red-400 hover:bg-red-500 text-white py-1 px-3 rounded text-sm"
-                      onClick={() => setModalDeleteOpen(true)}
+                      onClick={() => handleDeleteClick(membership)}
                     >
                       Delete
                     </button>

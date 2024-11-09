@@ -4,9 +4,30 @@ import {
   DialogPanel,
   DialogTitle,
 } from "@headlessui/react";
-import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 
-export default function DeleteMembershipModal({ open, setOpen }) {
+import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
+import { deleteDoc, doc } from "firebase/firestore";
+import { db } from "../../firebase";
+import { useNavigate } from "react-router-dom";
+
+export default function DeleteMembershipModal({ open, setOpen, membership }) {
+  const navigate = useNavigate();
+
+  const handleDelete = async () => {
+    if (!membership) {
+      console.error("Membership not found");
+      return;
+    }
+    try {
+      await deleteDoc(doc(db, "Membership", membership.id));
+      setOpen(false);
+      navigate("/crm");
+    } catch (error) {
+      console.error("Error deleting membership: ", error);
+      alert("There was an error deleting the membership. Please try again.");
+    }
+  };
+
   return (
     <Dialog
       open={open}
@@ -42,7 +63,7 @@ export default function DeleteMembershipModal({ open, setOpen }) {
             <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
               <button
                 type="button"
-                onClick={() => setOpen(false)}
+                onClick={handleDelete}
                 className="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
               >
                 Delete
