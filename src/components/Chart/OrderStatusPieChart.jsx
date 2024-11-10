@@ -6,33 +6,54 @@ import {
 } from "@material-tailwind/react";
 import Chart from "react-apexcharts";
 
-const chartConfig = {
-  type: "pie",
-  width: 280,
-  height: 280,
-  series: [30, 50, 20],
-  options: {
-    chart: {
-      toolbar: {
+function calculateOrderStatus(orders) {
+  const statusCount = {};
+
+  orders.forEach((order) => {
+    if (statusCount[order.orderStatus]) {
+      statusCount[order.orderStatus]++;
+    } else {
+      statusCount[order.orderStatus] = 1;
+    }
+  });
+
+  return statusCount;
+}
+
+export default function OrderStatusPieChart({ orders }) {
+  const statusCount = calculateOrderStatus(orders);
+
+  const chartData = {
+    series: Object.values(statusCount),
+    options: {
+      chart: {
+        type: "pie",
+        toolbar: {
+          show: false,
+        },
+      },
+      title: {
         show: false,
       },
+      dataLabels: {
+        enabled: false,
+      },
+      colors: [
+        "#ff8f00",
+        "#1e88e5",
+        "#00897b",
+        "#d32f2f",
+        "#7b1fa2",
+        "#1976d2",
+      ],
+      legend: {
+        show: true,
+        position: "bottom",
+      },
+      labels: Object.keys(statusCount),
     },
-    title: {
-      show: "",
-    },
-    dataLabels: {
-      enabled: false,
-    },
-    colors: ["#ff8f00", "#1e88e5", "#00897b"],
-    legend: {
-      show: true,
-      position: "bottom",
-    },
-    labels: ["Pending", "Delivered", "In Transmit"],
-  },
-};
+  };
 
-export default function OrderStatusPieChart() {
   return (
     <Card>
       <CardHeader
@@ -48,7 +69,12 @@ export default function OrderStatusPieChart() {
         </div>
       </CardHeader>
       <CardBody className="mt-4 p-3 grid place-items-center px-2">
-        <Chart {...chartConfig} />
+        <Chart
+          options={chartData.options}
+          series={chartData.series}
+          type="pie"
+          height={280}
+        />
       </CardBody>
     </Card>
   );
