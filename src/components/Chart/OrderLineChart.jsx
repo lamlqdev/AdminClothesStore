@@ -5,134 +5,117 @@ import {
   Typography,
 } from "@material-tailwind/react";
 import Chart from "react-apexcharts";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const TABS = [
   { label: "Week", value: "week" },
   { label: "Month", value: "month" },
-  { label: "Year", value: "year" },
 ];
 
-const chartConfig = {
-  type: "line",
-  height: 260,
-  series: [
-    {
-      name: "Order",
-      data: [50, 40, 300, 320, 450, 350, 200, 230, 400],
-    },
-  ],
-  options: {
-    chart: {
-      toolbar: {
-        show: false,
-      },
-    },
-    dataLabels: {
-      enabled: false,
-    },
-    colors: ["#6366F1"],
-    stroke: {
-      lineCap: "round",
-      curve: "smooth",
-    },
-    markers: {
-      size: 0,
-    },
-    xaxis: {
-      axisTicks: {
-        show: false,
-      },
-      axisBorder: {
-        show: false,
-      },
-      labels: {
-        style: {
-          colors: "#616161",
-          fontSize: "12px",
-          fontFamily: "inherit",
-          fontWeight: 400,
-        },
-      },
-      categories: [
-        "Apr",
-        "May",
-        "Jun",
-        "Jul",
-        "Aug",
-        "Sep",
-        "Oct",
-        "Nov",
-        "Dec",
-      ],
-    },
-    yaxis: {
-      labels: {
-        style: {
-          colors: "#616161",
-          fontSize: "12px",
-          fontFamily: "inherit",
-          fontWeight: 400,
-        },
-      },
-    },
-    grid: {
-      show: true,
-      borderColor: "#dddddd",
-      strokeDashArray: 6,
-      xaxis: {
-        lines: {
-          show: true,
-        },
-      },
-      padding: {
-        top: 5,
-        right: 20,
-      },
-    },
-    fill: {
-      opacity: 0.8,
-    },
-  },
-};
+const OrderLineChart = ({ orders }) => {
+  const [selectedTab, setSelectedTab] = useState("week");
+  const [chartData, setChartData] = useState({ categories: [], series: [] });
 
-export default function OrderLineChart() {
-  const [activeTab, setActiveTab] = useState("month");
+  useEffect(() => {
+    const processData = () => {
+      if (selectedTab === "week") {
+        // Tính toán số order mỗi ngày trong 7 ngày gần nhất
+        const last7Days = Array.from({ length: 7 }, (_, i) => {
+          const date = new Date();
+          date.setDate(date.getDate() - i);
+          return date.toISOString().split("T")[0];
+        }).reverse();
+
+        const data = last7Days.map((date) => {
+          return orders.filter((order) => {
+            const orderDate = new Date(order.orderTime.seconds * 1000);
+            return orderDate.toISOString().split("T")[0] === date;
+          }).length;
+        });
+
+        setChartData({
+          categories: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+          series: [{ name: "Orders", data }],
+        });
+      } else if (selectedTab === "month") {
+        // Tính toán số order theo 12 tháng trong năm
+        const months = Array.from({ length: 12 }, (_, i) => i + 1);
+
+        const data = months.map((month) => {
+          return orders.filter((order) => {
+            const orderDate = new Date(order.orderTime.seconds * 1000);
+            return orderDate.getMonth() + 1 === month;
+          }).length;
+        });
+
+        setChartData({
+          categories: [
+            "Jan",
+            "Feb",
+            "Mar",
+            "Apr",
+            "May",
+            "Jun",
+            "Jul",
+            "Aug",
+            "Sep",
+            "Oct",
+            "Nov",
+            "Dec",
+          ],
+          series: [{ name: "Orders", data }],
+        });
+      }
+    };
+
+    processData();
+  }, [selectedTab, orders]);
+
+  const chartConfig = {
+    type: "line",
+    height: 260,
+    series: chartData.series,
+    options: {
+      xaxis: {
+        categories: chartData.categories,
+      },
+    },
+  };
 
   return (
-    <Card className="shadow-md">
+    <Card>
       <CardHeader
         floated={false}
         shadow={false}
         color="transparent"
-        className="flex flex-row ml-4 gap-4 justify-between rounded-none md:flex-row md:items-center"
+        className="flex flex-col gap-4 mx-4 justify-between rounded-none md:flex-row md:items-center"
       >
         <div>
           <Typography variant="h6" color="blue-gray">
-            Order Statistic
+            Order Line Chart
           </Typography>
         </div>
-        <ul className="flex gap-3 mr-4 text-sm">
-          {TABS.map(({ label, value }) => (
-            <li key={value}>
-              <button
-                onClick={() => setActiveTab(value)}
-                className={`px-4 py-2 rounded-lg transition-all ${
-                  activeTab === value
-                    ? "bg-primaryColor text-white"
-                    : "bg-gray-200 hover:bg-gray-300"
-                }`}
-              >
-                {label}
-              </button>
-            </li>
+        <div className="flex gap-2 w-full md:w-max ml-3">
+          {TABS.map((tab) => (
+            <button
+              key={tab.value}
+              onClick={() => setSelectedTab(tab.value)}
+              className={`px-3 py-2 text-sm gap-1 rounded-md transition-all duration-300 ${
+                selectedTab === tab.value
+                  ? "bg-primaryColor text-white"
+                  : "bg-transparent text-gray-700 hover:bg-gray-300"
+              }`}
+            >
+              {tab.label}
+            </button>
           ))}
-        </ul>
+        </div>
       </CardHeader>
-      <CardBody className="px-2 pb-0 p-5">
+      <CardBody>
         <Chart {...chartConfig} />
       </CardBody>
     </Card>
   );
-}
+};
 
+export default OrderLineChart;

@@ -11,7 +11,7 @@ import {
   Avatar,
 } from "@material-tailwind/react";
 import { Link } from "react-router-dom";
-
+import { useState } from "react";
 const TABLE_HEAD = [
   "Order ID",
   "Date of order",
@@ -22,6 +22,18 @@ const TABLE_HEAD = [
 ];
 
 export default function OrderTable({ orders }) {
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const handleSearch = (event) => {
+    setSearchTerm(event.target.value);
+  };
+
+  const filteredOrders = orders.filter(
+    (order) =>
+      order.id.toString().includes(searchTerm) ||
+      order.userInfo.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <Card className="h-full w-full">
       <CardHeader floated={false} shadow={false} className="rounded-none">
@@ -39,6 +51,8 @@ export default function OrderTable({ orders }) {
               <Input
                 placeholder="Search something..."
                 className="border border-gray-300 rounded-lg shadow-sm pl-4 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-300"
+                value={searchTerm}
+                onChange={handleSearch}
               />
               <MagnifyingGlassIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-500" />
             </div>
@@ -66,7 +80,7 @@ export default function OrderTable({ orders }) {
             </tr>
           </thead>
           <tbody>
-            {orders.map((order) => {
+            {filteredOrders.map((order) => {
               const classes = "p-4 border-b border-blue-gray-50";
 
               return (
