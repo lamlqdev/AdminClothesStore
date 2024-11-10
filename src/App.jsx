@@ -14,6 +14,8 @@ import { loader as categoriesLoader } from "./pages/Category";
 import { loader as userLoader } from "./pages/UserProfile";
 import { loader as productLoader } from "./pages/ECommerce";
 import { loader as categoryOptionsLoader } from "./pages/Product";
+import { loader as orderLoader } from "./pages/Order";
+import { loader as orderDetailLoader } from "./pages/OrderDetail";
 
 const router = createBrowserRouter([
   {
@@ -27,10 +29,12 @@ const router = createBrowserRouter([
       {
         path: "order",
         element: <OrderPage />,
+        loader: orderLoader,
       },
       {
         path: "order/:orderId",
         element: <OrderDetail />,
+        loader: orderDetailLoader,
       },
       {
         path: "crm",

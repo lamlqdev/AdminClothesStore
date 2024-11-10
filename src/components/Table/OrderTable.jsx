@@ -10,15 +10,7 @@ import {
   CardFooter,
   Avatar,
 } from "@material-tailwind/react";
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-
-const FILTERS = [
-  { label: "All", value: "all" },
-  { label: "Pending", value: "pending" },
-  { label: "Delivered", value: "delivered" },
-  { label: "Cancelled", value: "cancelled" },
-];
+import { Link } from "react-router-dom";
 
 const TABLE_HEAD = [
   "Order ID",
@@ -29,71 +21,7 @@ const TABLE_HEAD = [
   "Manage",
 ];
 
-const TABLE_ROWS = [
-  {
-    orderId: "001",
-    date: "2024-10-01",
-    customer: {
-      img: "https://via.placeholder.com/50",
-      name: "John Doe",
-      email: "johndoe@example.com",
-    },
-    price: "$50.00",
-    status: "Pending",
-    online: true,
-  },
-  {
-    orderId: "002",
-    date: "2024-10-05",
-    customer: {
-      img: "https://via.placeholder.com/50",
-      name: "Jane Smith",
-      email: "janesmith@example.com",
-    },
-    price: "$75.00",
-    status: "Delivered",
-    online: false,
-  },
-  {
-    orderId: "003",
-    date: "2024-10-10",
-    customer: {
-      img: "https://via.placeholder.com/50",
-      name: "Alice Johnson",
-      email: "alicej@example.com",
-    },
-    price: "$30.00",
-    status: "Cancelled",
-    online: true,
-  },
-  {
-    orderId: "004",
-    date: "2024-10-12",
-    customer: {
-      img: "https://via.placeholder.com/50",
-      name: "Bob Brown",
-      email: "bobb@example.com",
-    },
-    price: "$20.00",
-    status: "Pending",
-    online: false,
-  },
-];
-
-export default function OrderTable() {
-  const [activeFilter, setActiveFilter] = useState("all");
-
-  const navigate = useNavigate();
-
-  const handleViewDetails = (orderId) => {
-    navigate(`/order/${orderId}`);
-  };
-
-  const filteredRows =
-    activeFilter === "all"
-      ? TABLE_ROWS
-      : TABLE_ROWS.filter((row) => row.status.toLowerCase() === activeFilter);
-
+export default function OrderTable({ orders }) {
   return (
     <Card className="h-full w-full">
       <CardHeader floated={false} shadow={false} className="rounded-none">
@@ -105,21 +33,7 @@ export default function OrderTable() {
           </div>
         </div>
         <div className="flex flex-col my-4 items-center justify-between gap-4 md:flex-row">
-          <div className="flex gap-2 ml-3">
-            {FILTERS.map(({ label, value }) => (
-              <Button
-                key={value}
-                onClick={() => setActiveFilter(value)}
-                className={`px-3 py-2 text-sm rounded-md ${
-                  activeFilter === value
-                    ? "bg-primaryColor text-white"
-                    : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-                }`}
-              >
-                {label}
-              </Button>
-            ))}
-          </div>
+          <div className="flex gap-2 ml-3"></div>
           <div className="w-full md:w-72 mr-4">
             <div className="relative w-full">
               <Input
@@ -152,95 +66,94 @@ export default function OrderTable() {
             </tr>
           </thead>
           <tbody>
-            {filteredRows.map(
-              ({ orderId, date, customer, price, status }, index) => {
-                const isLast = index === TABLE_ROWS.length - 1;
-                const classes = isLast
-                  ? "p-4"
-                  : "p-4 border-b border-blue-gray-50";
+            {orders.map((order) => {
+              const classes = "p-4 border-b border-blue-gray-50";
 
-                return (
-                  <tr key={orderId}>
-                    <td className={classes}>
-                      <Typography
-                        variant="small"
-                        color="blue-gray"
-                        className="font-normal"
-                      >
-                        {orderId}
-                      </Typography>
-                    </td>
-                    <td className={classes}>
-                      <Typography
-                        variant="small"
-                        color="blue-gray"
-                        className="font-normal"
-                      >
-                        {date}
-                      </Typography>
-                    </td>
-                    <td className={classes}>
-                      <div className="flex items-center gap-3">
-                        <Avatar
-                          src={customer.img}
-                          alt={customer.name}
-                          size="sm"
-                        />
-                        <div className="flex flex-col">
-                          <Typography
-                            variant="small"
-                            color="blue-gray"
-                            className="font-normal"
-                          >
-                            {customer.name}
-                          </Typography>
-                          <Typography
-                            variant="small"
-                            color="blue-gray"
-                            className="font-normal opacity-70"
-                          >
-                            {customer.email}
-                          </Typography>
-                        </div>
-                      </div>
-                    </td>
-                    <td className={classes}>
-                      <Typography
-                        variant="small"
-                        color="blue-gray"
-                        className="font-normal"
-                      >
-                        {price}
-                      </Typography>
-                    </td>
-                    <td className={classes}>
-                      <Chip
-                        variant="ghost"
-                        size="sm"
-                        value={status}
-                        color={
-                          status === "Delivered"
-                            ? "green"
-                            : status === "Pending"
-                            ? "yellow"
-                            : "red"
+              return (
+                <tr key={order.id}>
+                  <td className={classes}>
+                    <Typography
+                      variant="small"
+                      color="blue-gray"
+                      className="font-normal"
+                    >
+                      {order.id}
+                    </Typography>
+                  </td>
+                  <td className={classes}>
+                    <Typography
+                      variant="small"
+                      color="blue-gray"
+                      className="font-normal"
+                    >
+                      {order.orderTime?.toDate().toLocaleDateString("en-GB")}
+                    </Typography>
+                  </td>
+                  <td className={classes}>
+                    <div className="flex items-center gap-3">
+                      <Avatar
+                        src={
+                          order.userInfo.imageUrl ||
+                          "https://cdn-icons-png.flaticon.com/128/3177/3177440.png"
                         }
+                        alt="user_avatar"
+                        size="sm"
                       />
-                    </td>
-                    <td className={classes}>
+                      <div className="flex flex-col">
+                        <Typography
+                          variant="small"
+                          color="blue-gray"
+                          className="font-normal"
+                        >
+                          {order.userInfo.name}
+                        </Typography>
+                        <Typography
+                          variant="small"
+                          color="blue-gray"
+                          className="font-normal opacity-70"
+                        >
+                          {order.userInfo.email || "No email"}
+                        </Typography>
+                      </div>
+                    </div>
+                  </td>
+                  <td className={classes}>
+                    <Typography
+                      variant="small"
+                      color="blue-gray"
+                      className="font-normal"
+                    >
+                      {order.total}
+                    </Typography>
+                  </td>
+                  <td className={classes}>
+                    <Chip
+                      variant="ghost"
+                      size="sm"
+                      value={order.orderStatus}
+                      color={
+                        order.orderStatus === "Delivered"
+                          ? "green"
+                          : order.orderStatus === "Pending"
+                          ? "yellow"
+                          : "red"
+                      }
+                    />
+                  </td>
+                  <td className={classes}>
+                    <Link to={`/order/${order.id}`}>
                       <Button
                         variant="filled"
                         size="sm"
                         className="bg-indigo-600 text-white flex items-center justify-center hover:bg-indigo-700"
-                        onClick={() => handleViewDetails(orderId)}
                       >
                         View Detail
                       </Button>
-                    </td>
-                  </tr>
-                );
-              }
-            )}
+                    </Link>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </CardBody>
