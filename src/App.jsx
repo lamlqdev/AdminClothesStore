@@ -16,7 +16,7 @@ import { loader as productLoader } from "./pages/ECommerce";
 import { loader as categoryOptionsLoader } from "./pages/Product";
 import { loader as orderLoader } from "./pages/Order";
 import { loader as orderDetailLoader } from "./pages/OrderDetail";
-
+import { loader as dashboardLoader } from "./pages/DashBoard";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -25,6 +25,7 @@ const router = createBrowserRouter([
       {
         index: true,
         element: <DashBoardPage />,
+        loader: dashboardLoader,
       },
       {
         path: "order",
