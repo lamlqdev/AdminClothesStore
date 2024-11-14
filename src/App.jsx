@@ -9,7 +9,6 @@ import SettingPage from "./pages/Setting";
 import UserProfile from "./pages/UserProfile";
 import OrderDetail from "./pages/OrderDetail";
 import AddProduct from "./pages/Product";
-import { loader as membershipLoader } from "./pages/CustomerRelationshipManagement";
 import { loader as userLoader } from "./pages/UserProfile";
 import { loader as productLoader } from "./pages/ECommerce";
 import { loader as categoryOptionsLoader } from "./pages/Product";
@@ -45,14 +44,13 @@ const router = createBrowserRouter([
       {
         path: "crm",
         element: <CustomerRelationshipManagementPage />,
-        loader: membershipLoader,
         children: [
           { path: "new", element: <NewMembership /> },
           { path: ":membershipId/edit", element: <EditMembership /> },
         ],
       },
       {
-        path: "crm/:userId",
+        path: "crm/user-detail/:userId",
         element: <UserProfile />,
         loader: userLoader,
       },
