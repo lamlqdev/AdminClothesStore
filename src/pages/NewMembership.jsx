@@ -1,36 +1,36 @@
 import { useNavigate, Link } from "react-router-dom";
-import { serverTimestamp } from "firebase/firestore";
 import { useMutation } from "@tanstack/react-query";
+import { serverTimestamp } from "firebase/firestore";
 
-import CategoryForm from "../components/Form/CategoryForm";
 import Modal from "../components/UI/Modal";
-import { createCategory } from "../api/categoryAPI";
+import MembershipForm from "../components/Form/MembershipForm";
+import { createMembership } from "../api/membershipAPI";
 import { queryClient } from "../api/client";
 
-export default function NewCategory() {
+export default function NewMembership() {
   const navigate = useNavigate();
 
   const { mutate, isPending, isError, error } = useMutation({
-    mutationFn: createCategory,
+    mutationFn: createMembership,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["categories"] });
+      queryClient.invalidateQueries({ queryKey: ["memberships"] });
       navigate("..");
     },
   });
 
   function handleSubmit(formData) {
-    const newCategory = {
+    const newMembership = {
       ...formData,
-      isVisible: true,
+      isActive: true,
       createdAt: serverTimestamp(),
     };
-    mutate({ newCategory });
+    mutate({ newMembership });
   }
 
   return (
     <Modal onClose={() => navigate("..")}>
-      <CategoryForm onSubmit={handleSubmit}>
-        {isPending && <p>Creating category...</p>}
+      <MembershipForm onSubmit={handleSubmit}>
+        {isPending && <p>Creating...</p>}
         {!isPending && (
           <>
             <Link
@@ -47,13 +47,13 @@ export default function NewCategory() {
             </button>
           </>
         )}
-        {isError && (
-          <ErrorBlock
-            title="Failed to create category"
-            message={error.message || "Please check and try again."}
-          />
-        )}
-      </CategoryForm>
+      </MembershipForm>
+      {isError && (
+        <ErrorBlock
+          title="Failed to create membership"
+          message={error.message || "Please check and try again."}
+        />
+      )}
     </Modal>
   );
 }

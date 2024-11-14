@@ -1,7 +1,7 @@
 import MembershipTable from "../components/Table/MembershipTable";
 import UserInfoTable from "../components/Table/UsersTable";
 import Breadcrumb from "../components/Breadcrump";
-import { useLoaderData } from "react-router-dom";
+import { useLoaderData, Outlet } from "react-router-dom";
 import { getDocs, collection } from "firebase/firestore";
 import { db } from "../firebase";
 
@@ -9,6 +9,7 @@ export default function CustomerRelationshipManagementPage() {
   const { memberships, users } = useLoaderData();
   return (
     <>
+      <Outlet />
       <Breadcrumb pageName="CRM" />
       <div className="space-y-8">
         <MembershipTable memberships={memberships} />

@@ -5,7 +5,7 @@ import Breadcrumb from "../components/Breadcrump";
 import CategoryTable from "../components/Table/CategoryTable";
 import LoadingIndicator from "../components/UI/LoadingIndicator";
 import ErrorBlock from "../components/UI/ErrorBlock";
-import { fetchCategories } from "../api/firebaseApi";
+import { fetchCategories } from "../api/categoryAPI";
 
 export default function CategoryPage() {
   const {

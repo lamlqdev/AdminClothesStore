@@ -1,26 +1,26 @@
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, Link } from "react-router-dom";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { serverTimestamp } from "firebase/firestore";
 
+import { queryClient } from "../api/client";
 import Modal from "../components/UI/Modal";
-import CategoryForm from "../components/Form/CategoryForm";
+import MembershipForm from "../components/Form/MembershipForm";
 import LoadingIndicator from "../components/UI/LoadingIndicator";
 import ErrorBlock from "../components/UI/ErrorBlock";
-import { fetchCategory, updateCategory } from "../api/categoryAPI";
-import { queryClient } from "../api/client";
+import { fetchMembership, updateMembership } from "../api/membershipAPI";
 
-export default function EditCategory() {
+export default function EditMembership() {
   const navigate = useNavigate();
   const params = useParams();
 
   const {
-    data: category,
+    data: membership,
     isPending,
     isError,
     error,
   } = useQuery({
-    queryKey: ["categories", { id: params.categoryId }],
-    queryFn: () => fetchCategory({ id: params.categoryId }),
+    queryKey: ["memberships", { id: params.membershipId }],
+    queryFn: () => fetchMembership({ id: params.membershipId }),
   });
 
   const {
@@ -29,20 +29,20 @@ export default function EditCategory() {
     isError: isErrorUpdate,
     error: updateError,
   } = useMutation({
-    mutationFn: updateCategory,
+    mutationFn: updateMembership,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["categories"] });
+      queryClient.invalidateQueries({ queryKey: ["memberships"] });
       navigate("..");
     },
   });
 
   function handleSubmit(data) {
-    const updateCategory = {
+    const updatedMembership = {
       ...data,
-      isVisible: true,
+      isActive: true,
       updatedAt: serverTimestamp(),
     };
-    mutate({ id: params.categoryId, data: updateCategory });
+    mutate({ id: params.membershipId, data: updatedMembership });
   }
 
   let content;
@@ -55,12 +55,12 @@ export default function EditCategory() {
     content = (
       <ErrorBlock
         title="An error occured!"
-        message={error.message || "Could not fetch category"}
+        message={error.message || "Could not fetch membership"}
       />
     );
   }
 
-  if (category) {
+  if (membership) {
     content = (
       <>
         {isErrorUpdate && (
@@ -69,7 +69,7 @@ export default function EditCategory() {
             message={updateError.message || "Could not update category"}
           />
         )}
-        <CategoryForm category={category} onSubmit={handleSubmit}>
+        <MembershipForm membership={membership} onSubmit={handleSubmit}>
           {isPendingUpdate && <p>Updating...</p>}
           {!isPendingUpdate && (
             <>
@@ -87,7 +87,7 @@ export default function EditCategory() {
               </button>
             </>
           )}
-        </CategoryForm>
+        </MembershipForm>
       </>
     );
   }

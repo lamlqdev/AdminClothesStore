@@ -18,8 +18,10 @@ import { loader as orderDetailLoader } from "./pages/OrderDetail";
 import { loader as dashboardLoader } from "./pages/DashBoard";
 import NewCategory from "./pages/NewCategory";
 import { QueryClientProvider } from "@tanstack/react-query";
-import { queryClient } from "./api/firebaseApi";
+import { queryClient } from "./api/client";
 import EditCategory from "./pages/EditCategory";
+import NewMembership from "./pages/NewMembership";
+import EditMembership from "./pages/EditMembership";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -44,6 +46,10 @@ const router = createBrowserRouter([
         path: "crm",
         element: <CustomerRelationshipManagementPage />,
         loader: membershipLoader,
+        children: [
+          { path: "new", element: <NewMembership /> },
+          { path: ":membershipId/edit", element: <EditMembership /> },
+        ],
       },
       {
         path: "crm/:userId",

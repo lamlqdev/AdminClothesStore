@@ -7,7 +7,8 @@ import {
   Typography,
 } from "@material-tailwind/react";
 import { Edit, Eye, EyeOff } from "lucide-react";
-import { queryClient, updateCategoryVisibility } from "../../api/firebaseApi";
+import { updateCategoryVisibility } from "../../api/categoryAPI";
+import { queryClient } from "../../api/client";
 import LoadingIndicator from "../UI/LoadingIndicator";
 
 const TABLE_HEAD = ["Category ID", "Category name", "Manage"];

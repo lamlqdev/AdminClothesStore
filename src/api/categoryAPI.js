@@ -1,4 +1,3 @@
-import { QueryClient } from "@tanstack/react-query";
 import {
   doc,
   addDoc,
@@ -9,8 +8,6 @@ import {
 } from "firebase/firestore";
 
 import { db } from "../firebase";
-
-export const queryClient = new QueryClient();
 
 export async function fetchCategories() {
   try {
