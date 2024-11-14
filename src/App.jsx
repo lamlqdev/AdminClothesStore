@@ -10,13 +10,16 @@ import UserProfile from "./pages/UserProfile";
 import OrderDetail from "./pages/OrderDetail";
 import AddProduct from "./pages/Product";
 import { loader as membershipLoader } from "./pages/CustomerRelationshipManagement";
-import { loader as categoriesLoader } from "./pages/Category";
 import { loader as userLoader } from "./pages/UserProfile";
 import { loader as productLoader } from "./pages/ECommerce";
 import { loader as categoryOptionsLoader } from "./pages/Product";
 import { loader as orderLoader } from "./pages/Order";
 import { loader as orderDetailLoader } from "./pages/OrderDetail";
 import { loader as dashboardLoader } from "./pages/DashBoard";
+import NewCategory from "./pages/NewCategory";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { queryClient } from "./api/firebaseApi";
+import EditCategory from "./pages/EditCategory";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -60,7 +63,10 @@ const router = createBrowserRouter([
       {
         path: "category",
         element: <CategoryPage />,
-        loader: categoriesLoader,
+        children: [
+          { path: "new", element: <NewCategory /> },
+          { path: ":categoryId/edit", element: <EditCategory /> },
+        ],
       },
       {
         path: "setting",
@@ -71,7 +77,11 @@ const router = createBrowserRouter([
 ]);
 
 function App() {
-  return <RouterProvider router={router} />;
+  return (
+    <QueryClientProvider client={queryClient}>
+      <RouterProvider router={router} />;
+    </QueryClientProvider>
+  );
 }
 
 export default App;

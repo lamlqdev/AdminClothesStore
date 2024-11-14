@@ -1,27 +1,48 @@
-import { collection, getDocs } from "firebase/firestore";
-import { db } from "../firebase";
+import { useQuery } from "@tanstack/react-query";
+import { Outlet } from "react-router-dom";
+
 import Breadcrumb from "../components/Breadcrump";
 import CategoryTable from "../components/Table/CategoryTable";
-import { useLoaderData } from "react-router-dom";
+import LoadingIndicator from "../components/UI/LoadingIndicator";
+import ErrorBlock from "../components/UI/ErrorBlock";
+import { fetchCategories } from "../api/firebaseApi";
 
 export default function CategoryPage() {
-  const categories = useLoaderData();
+  const {
+    data: categories,
+    isPending,
+    isError,
+    error,
+  } = useQuery({
+    queryKey: ["categories"],
+    queryFn: fetchCategories,
+    refetchOnWindowFocus: true,
+  });
+
+  let content;
+
+  if (isPending) {
+    content = <LoadingIndicator />;
+  }
+
+  if (isError) {
+    content = (
+      <ErrorBlock
+        title="An error occured!"
+        message={error.message || "Could not fetch categories"}
+      />
+    );
+  }
+
+  if (categories) {
+    content = <CategoryTable categories={categories} />;
+  }
+
   return (
     <>
+      <Outlet />
       <Breadcrumb pageName="Category" />
-      <CategoryTable categories={categories} />
+      {content}
     </>
   );
-}
-
-export async function loader() {
-  const querySnapshot = await getDocs(collection(db, "Categories"));
-
-  const categories = querySnapshot.docs.map((doc) => ({
-    id: doc.id,
-    ...doc.data(),
-  }));
-
-  console.log(categories);
-  return categories;
 }
