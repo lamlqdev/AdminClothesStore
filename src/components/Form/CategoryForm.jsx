@@ -7,7 +7,10 @@ export default function CategoryForm({ category, onSubmit, children }) {
   }
 
   return (
-    <form className="mt-4" onSubmit={handleSubmit}>
+    <form className="mt-2" onSubmit={handleSubmit}>
+      <h1 className="text-lg text-center font-bold text-gray-900">
+        {category ? "Edit Category" : "Create Category"}
+      </h1>
       <div>
         <label htmlFor="id" className="block text-sm font-medium text-gray-700">
           Category ID
