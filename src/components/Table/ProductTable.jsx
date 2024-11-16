@@ -1,5 +1,5 @@
-import { useNavigate } from "react-router-dom";
-
+import { Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
 import {
   Card,
   CardBody,
@@ -17,6 +17,8 @@ import {
 } from "@heroicons/react/24/outline";
 
 const TABLE_HEAD = [
+  "Serial",
+  "Product Image",
   "ID Product",
   "Product Name",
   "Category",
@@ -27,14 +29,34 @@ const TABLE_HEAD = [
 
 export default function ProductTable({ products, categories }) {
   const navigate = useNavigate();
+  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [searchTerm, setSearchTerm] = useState("");
 
   const categoryOptions = [
     { id: "all", categoryName: "All" },
     ...categories.map((category) => ({
-      id: category.id,
+      id: category.categoryId,
       categoryName: category.name,
     })),
   ];
+
+  const handleCategoryChange = (e) => {
+    console.log(e.target.value);
+    setSelectedCategory(e.target.value);
+  };
+
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+  };
+
+  const filteredProducts = products
+    .filter(
+      (product) =>
+        selectedCategory === "all" || product.categoryId === selectedCategory
+    )
+    .filter((product) =>
+      product.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
   return (
     <Card className="h-full w-full">
@@ -46,9 +68,13 @@ export default function ProductTable({ products, categories }) {
             </Typography>
           </div>
           <div className="w-full md:w-1/3 lg:w-1/4">
-            <select className="border border-gray-300 rounded-lg shadow-sm px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-300">
+            <select
+              value={selectedCategory}
+              onChange={handleCategoryChange}
+              className="border border-gray-300 rounded-lg shadow-sm px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-300"
+            >
               {categoryOptions.map((category) => (
-                <option key={category.id} value={category.categoryName}>
+                <option key={category.id} value={category.id}>
                   {category.categoryName}
                 </option>
               ))}
@@ -58,6 +84,8 @@ export default function ProductTable({ products, categories }) {
             <div className="relative w-full">
               <Input
                 placeholder="Search product..."
+                value={searchTerm}
+                onChange={handleSearchChange}
                 className="border border-gray-300 rounded-lg shadow-sm pl-4 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-300"
               />
               <MagnifyingGlassIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-500" />
@@ -98,60 +126,86 @@ export default function ProductTable({ products, categories }) {
           </thead>
 
           <tbody>
-            {products.map((product) => (
-              <tr key={product.id} className="even:bg-blue-gray-50/50">
-                <td className="p-4 border-b border-blue-gray-100">
-                  <Typography
-                    variant="small"
-                    color="blue-gray"
-                    className="font-normal"
-                  >
-                    {product.id}
-                  </Typography>
-                </td>
-                <td className="p-4 border-b border-blue-gray-100">
-                  <Typography
-                    variant="small"
-                    color="blue-gray"
-                    className="font-normal"
-                  >
-                    {product.name}
-                  </Typography>
-                </td>
-                <td className="p-4 border-b border-blue-gray-100">
-                  <Typography
-                    variant="small"
-                    color="blue-gray"
-                    className="font-normal"
-                  >
-                    {product.categoryId}
-                  </Typography>
-                </td>
-                <td className="p-4 border-b border-blue-gray-100">
-                  <Typography
-                    variant="small"
-                    color="blue-gray"
-                    className="font-normal"
-                  >
-                    {product.price}
-                  </Typography>
-                </td>
-                <td className="p-4 border-b border-blue-gray-100">
-                  <Typography
-                    variant="small"
-                    color="blue-gray"
-                    className="font-normal"
-                  >
-                    {product.quantity || "N/A"}
-                  </Typography>
-                </td>
-                <td className="p-4 border-b border-blue-gray-100">
-                  <button className="text-blue-500 hover:text-blue-700">
-                    <PencilIcon className="h-5 w-5" />
-                  </button>
-                </td>
-              </tr>
-            ))}
+            {filteredProducts.map((product, index) => {
+              const totalQuantity = product.sizelist
+                ? product.sizelist.reduce(
+                    (total, size) => total + size.quantity,
+                    0
+                  )
+                : "N/A";
+              return (
+                <tr key={product.id} className="even:bg-blue-gray-50/50">
+                  <td className="p-4 border-b border-blue-gray-100">
+                    <Typography
+                      variant="small"
+                      color="blue-gray"
+                      className="font-normal"
+                    >
+                      {index + 1}
+                    </Typography>
+                  </td>
+                  <td className="p-4 border-b border-blue-gray-100">
+                    <img
+                      src={product.image}
+                      alt={product.name}
+                      className="h-14 w-14 object-cover"
+                    />
+                  </td>
+                  <td className="p-4 border-b border-blue-gray-100">
+                    <Typography
+                      variant="small"
+                      color="blue-gray"
+                      className="font-normal"
+                    >
+                      {product.id}
+                    </Typography>
+                  </td>
+                  <td className="p-4 border-b border-blue-gray-100">
+                    <Typography
+                      variant="small"
+                      color="blue-gray"
+                      className="font-normal"
+                    >
+                      {product.name}
+                    </Typography>
+                  </td>
+                  <td className="p-4 border-b border-blue-gray-100">
+                    <Typography
+                      variant="small"
+                      color="blue-gray"
+                      className="font-normal"
+                    >
+                      {product.categoryId}
+                    </Typography>
+                  </td>
+                  <td className="p-4 border-b border-blue-gray-100">
+                    <Typography
+                      variant="small"
+                      color="blue-gray"
+                      className="font-normal"
+                    >
+                      {product.price}
+                    </Typography>
+                  </td>
+                  <td className="p-4 border-b border-blue-gray-100">
+                    <Typography
+                      variant="small"
+                      color="blue-gray"
+                      className="font-normal"
+                    >
+                      {totalQuantity}
+                    </Typography>
+                  </td>
+                  <td className="p-4 border-b border-blue-gray-100">
+                    <Link to={`${product.id}/edit`}>
+                      <button className="text-blue-500 hover:text-blue-700">
+                        <PencilIcon className="h-5 w-5" />
+                      </button>
+                    </Link>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </CardBody>

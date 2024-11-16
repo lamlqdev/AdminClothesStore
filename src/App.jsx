@@ -10,7 +10,8 @@ import CategoryPage from "./pages/Category";
 import SettingPage from "./pages/Setting";
 import UserProfile from "./pages/UserProfile";
 import OrderDetail from "./pages/OrderDetail";
-import NewProduct from "./pages/NewProduct";
+import NewProductPage from "./pages/NewProduct";
+import EditProductPage from "./pages/EditProduct";
 import NewCategory from "./pages/NewCategory";
 import EditCategory from "./pages/EditCategory";
 import NewMembership from "./pages/NewMembership";
@@ -59,7 +60,11 @@ const router = createBrowserRouter([
       },
       {
         path: "ecommerce/new",
-        element: <NewProduct />,
+        element: <NewProductPage />,
+      },
+      {
+        path: "ecommerce/:productId/edit",
+        element: <EditProductPage />,
       },
       {
         path: "category",
