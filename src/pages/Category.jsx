@@ -16,7 +16,6 @@ export default function CategoryPage() {
   } = useQuery({
     queryKey: ["categories"],
     queryFn: fetchCategories,
-    refetchOnWindowFocus: true,
   });
 
   let content;

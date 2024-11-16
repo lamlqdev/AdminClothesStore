@@ -16,15 +16,17 @@ import {
   PlusIcon,
 } from "@heroicons/react/24/outline";
 
+const TABLE_HEAD = [
+  "ID Product",
+  "Product Name",
+  "Category",
+  "Price",
+  "Quantity",
+  "Action",
+];
+
 export default function ProductTable({ products, categories }) {
-  const TABLE_HEAD = [
-    "ID Product",
-    "Product Name",
-    "Category",
-    "Price",
-    "Quantity",
-    "Action",
-  ];
+  const navigate = useNavigate();
 
   const categoryOptions = [
     { id: "all", categoryName: "All" },
@@ -33,12 +35,6 @@ export default function ProductTable({ products, categories }) {
       categoryName: category.name,
     })),
   ];
-
-  const navigate = useNavigate();
-
-  const handleAddProduct = () => {
-    navigate("add-product");
-  };
 
   return (
     <Card className="h-full w-full">
@@ -69,7 +65,9 @@ export default function ProductTable({ products, categories }) {
           </div>
           <Button
             className="flex items-center gap-2"
-            onClick={handleAddProduct}
+            onClick={() => {
+              navigate("new");
+            }}
             color="blue"
           >
             <PlusIcon className="h-5 w-5" />

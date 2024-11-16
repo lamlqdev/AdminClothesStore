@@ -1,31 +1,60 @@
-import React, { useState } from "react";
-import { Trash } from "lucide-react";
-import { collection, addDoc, getDocs } from "firebase/firestore";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { serverTimestamp } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { db, storage } from "../firebase";
-import { useLoaderData, useNavigate } from "react-router-dom";
+import { Trash } from "lucide-react";
 
-export default function AddProduct() {
+import LoadingIndicator from "../components/UI/LoadingIndicator";
+import ErrorBlock from "../components/UI/ErrorBlock";
+import { createProduct } from "../api/productAPI";
+import { fetchCategories } from "../api/categoryAPI";
+import { queryClient } from "../api/client";
+import { storage } from "../firebase";
+
+export default function NewProduct() {
   const navigate = useNavigate();
+
+  const {
+    data: categories,
+    isPending: isPendingCategories,
+    isError: isErrorCategories,
+    error: categoriesError,
+  } = useQuery({
+    queryKey: ["categories"],
+    queryFn: fetchCategories,
+  });
+
+  const { mutate, isPending, isError, error } = useMutation({
+    mutationFn: createProduct,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["products"] });
+      navigate("/ecommerce");
+    },
+  });
+
   const [formData, setFormData] = useState({
     name: "",
-    category: "",
+    categoryId: "",
     price: "",
-    discount: "",
+    gender: "Female",
     description: "",
-    status: "Available",
   });
+
   const [sizes, setSizes] = useState([{ size: "", quantity: "" }]);
   const [mainImage, setMainImage] = useState(null);
   const [mainImagePreview, setMainImagePreview] = useState(null);
   const [galleryImages, setGalleryImages] = useState([]);
   const [galleryImagePreviews, setGalleryImagePreviews] = useState([]);
 
-  const categories = useLoaderData();
-  const categoryOptions = categories.map((category) => ({
-    id: category.id,
-    categoryName: category.name,
-  }));
+  useEffect(() => {
+    if (categories && categories.length > 0) {
+      setFormData((prevFormData) => ({
+        ...prevFormData,
+        categoryId: categories[0].id,
+      }));
+    }
+  }, [categories]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -100,43 +129,50 @@ export default function AddProduct() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    let mainImageUrl = null;
+    let galleryImageUrls = [];
     try {
       // Upload main image
-      let mainImageUrl = null;
       if (mainImage) {
         const mainImageRef = ref(storage, `products/${mainImage.name}`);
         await uploadBytes(mainImageRef, mainImage);
         mainImageUrl = await getDownloadURL(mainImageRef);
       }
-
       // Upload gallery images
-      const galleryImageUrls = await Promise.all(
+      galleryImageUrls = await Promise.all(
         galleryImages.map(async (image) => {
           const imageRef = ref(storage, `products/${image.name}`);
           await uploadBytes(imageRef, image);
           return await getDownloadURL(imageRef);
         })
       );
-
-      // Save product data to Firestore
-      const productData = {
-        ...formData,
-        sizes,
-        mainImage: mainImageUrl,
-        galleryImages: galleryImageUrls,
-      };
-      await addDoc(collection(db, "NewProducts"), productData);
-      alert("Product added successfully");
-      navigate("/ecommerce");
     } catch (error) {
-      console.error("Error adding product: ", error);
-      alert("Error adding product");
+      console.error("Error save product image: ", error);
+      alert("Error save product image");
     }
+
+    // Save product data to Firestore
+    const productData = {
+      ...formData,
+      sizelist: sizes,
+      image: mainImageUrl,
+      images: galleryImageUrls,
+      rating: 0,
+      sale: 0,
+      createdAt: serverTimestamp(),
+    };
+    mutate(productData);
   };
 
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold text-center mb-8">Add New Product</h1>
+      {isError && (
+        <ErrorBlock
+          title="Failed to create product"
+          message={error.message || "Please check and try again."}
+        />
+      )}
       <form
         onSubmit={handleSubmit}
         className="bg-white p-6 rounded-lg shadow-lg space-y-6"
@@ -159,26 +195,37 @@ export default function AddProduct() {
 
         {/* Category */}
         <div>
-          <label className="block text-sm font-medium text-gray-700">
-            Category
-          </label>
-          <select
-            id="category"
-            name="category"
-            value={formData.category}
-            onChange={handleChange}
-            required
-            className="w-full mt-1 p-2 border border-gray-300 rounded-md"
-          >
-            {categoryOptions.map((category) => (
-              <option key={category.id} value={category.categoryName}>
-                {category.categoryName}
-              </option>
-            ))}
-          </select>
+          {isPendingCategories && <LoadingIndicator />}
+          {isErrorCategories && (
+            <ErrorBlock
+              title="An error occured!"
+              message={categoriesError.message || "Could not fetch categories"}
+            />
+          )}
+          {categories && (
+            <>
+              <label className="block text-sm font-medium text-gray-700">
+                Category
+              </label>
+              <select
+                id="categoryId"
+                name="categoryId"
+                value={formData.categoryId}
+                onChange={handleChange}
+                required
+                className="w-full mt-1 p-2 border border-gray-300 rounded-md"
+              >
+                {categories.map((category) => (
+                  <option key={category.id} value={category.categoryId}>
+                    {category.name}
+                  </option>
+                ))}
+              </select>
+            </>
+          )}
         </div>
 
-        {/* Price & Discount */}
+        {/* Price & Gender */}
         <div className="flex space-x-4">
           <div className="flex-1">
             <label className="block text-sm font-medium text-gray-700">
@@ -196,17 +243,19 @@ export default function AddProduct() {
           </div>
           <div className="flex-1">
             <label className="block text-sm font-medium text-gray-700">
-              Discount (%)
+              Gender
             </label>
-            <input
-              type="number"
-              id="discount"
-              name="discount"
-              value={formData.discount}
+            <select
+              id="gender"
+              name="gender"
+              value={formData.gender}
               onChange={handleChange}
-              required
               className="w-full mt-1 p-2 border border-gray-300 rounded-md"
-            />
+            >
+              <option value="Female">Female</option>
+              <option value="Male">Male</option>
+              <option value="Unisex">Unisex</option>
+            </select>
           </div>
         </div>
 
@@ -331,41 +380,16 @@ export default function AddProduct() {
           </button>
         </div>
 
-        {/* Status */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700">
-            Status
-          </label>
-          <select
-            id="status"
-            name="status"
-            value={formData.status}
-            onChange={handleChange}
-            className="w-full mt-1 p-2 border border-gray-300 rounded-md"
+        {isPending && <LoadingIndicator />}
+        {!isPending && (
+          <button
+            type="submit"
+            className="w-full py-2 px-4 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600 transition duration-200"
           >
-            <option value="Available">Available</option>
-            <option value="Out of Stock">Out of Stock</option>
-            <option value="Coming Soon">Coming Soon</option>
-          </select>
-        </div>
-
-        <button
-          type="submit"
-          className="w-full py-2 px-4 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600 transition duration-200"
-        >
-          Add Product
-        </button>
+            Add Product
+          </button>
+        )}
       </form>
     </div>
   );
-}
-
-export async function loader() {
-  const categoriesSnapshot = await getDocs(collection(db, "Categories"));
-  const categories = categoriesSnapshot.docs.map((doc) => ({
-    id: doc.id,
-    ...doc.data(),
-  }));
-
-  return categories;
 }

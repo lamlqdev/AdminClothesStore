@@ -1,4 +1,6 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { QueryClientProvider } from "@tanstack/react-query";
+
 import DefaultLayout from "./layout/DefaultLayout";
 import DashBoardPage from "./pages/DashBoard";
 import OrderPage from "./pages/Order";
@@ -8,19 +10,17 @@ import CategoryPage from "./pages/Category";
 import SettingPage from "./pages/Setting";
 import UserProfile from "./pages/UserProfile";
 import OrderDetail from "./pages/OrderDetail";
-import AddProduct from "./pages/Product";
-import { loader as userLoader } from "./pages/UserProfile";
-import { loader as productLoader } from "./pages/ECommerce";
-import { loader as categoryOptionsLoader } from "./pages/Product";
-import { loader as orderLoader } from "./pages/Order";
-import { loader as orderDetailLoader } from "./pages/OrderDetail";
-import { loader as dashboardLoader } from "./pages/DashBoard";
+import NewProduct from "./pages/NewProduct";
 import NewCategory from "./pages/NewCategory";
-import { QueryClientProvider } from "@tanstack/react-query";
-import { queryClient } from "./api/client";
 import EditCategory from "./pages/EditCategory";
 import NewMembership from "./pages/NewMembership";
 import EditMembership from "./pages/EditMembership";
+
+import { queryClient } from "./api/client";
+import { loader as orderLoader } from "./pages/Order";
+import { loader as orderDetailLoader } from "./pages/OrderDetail";
+import { loader as dashboardLoader } from "./pages/DashBoard";
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -52,17 +52,14 @@ const router = createBrowserRouter([
       {
         path: "crm/user-detail/:userId",
         element: <UserProfile />,
-        loader: userLoader,
       },
       {
         path: "ecommerce",
         element: <ECommercePage />,
-        loader: productLoader,
       },
       {
-        path: "ecommerce/add-product",
-        element: <AddProduct />,
-        loader: categoryOptionsLoader,
+        path: "ecommerce/new",
+        element: <NewProduct />,
       },
       {
         path: "category",
