@@ -1,20 +1,21 @@
-import CardDataStat from "../components/CardDataStat";
-import { Eye, Users, ShoppingBag, HandCoins } from "lucide-react";
-import RevevueBarChart from "../components/Chart/RevenueBarChart";
-import OrderPieChart from "../components/Chart/OrderPieChart";
 import { useLoaderData } from "react-router-dom";
-import { db } from "../firebase";
+import { Package, Users, ShoppingBag, HandCoins } from "lucide-react";
 import { collection, getDocs } from "firebase/firestore";
+import { db } from "../firebase";
+
+import RevevueBarChart from "../components/Chart/RevenueBarChart";
+import ProductPieChart from "../components/Chart/OrderPieChart";
+import CardDataStat from "../components/CardDataStat";
 
 export default function DashBoardPage() {
-  const { users, products } = useLoaderData();
+  const { users, products, orders } = useLoaderData();
   return (
     <>
       <section className="text-gray-700 body-font">
         <div className="container px-5 mx-auto">
           <div className="flex flex-wrap -m-4 text-center">
             <div className="p-4 md:w-1/4 sm:w-1/2 w-full">
-              <CardDataStat icon={Eye} title="Visit" data="120" />
+              <CardDataStat icon={Package} title="Orders" data={orders} />
             </div>
             <div className="p-4 md:w-1/4 sm:w-1/2 w-full">
               <CardDataStat icon={Users} title="Users" data={users} />
@@ -37,7 +38,7 @@ export default function DashBoardPage() {
             <RevevueBarChart />
           </div>
           <div className="w-5/12">
-            <OrderPieChart />
+            <ProductPieChart />
           </div>
         </div>
       </section>
@@ -48,12 +49,15 @@ export default function DashBoardPage() {
 export async function loader() {
   const usersSnapshot = await getDocs(collection(db, "users"));
   const productsSnapshot = await getDocs(collection(db, "Products"));
+  const ordersSnapshot = await getDocs(collection(db, "Orders"));
 
   const usersCount = usersSnapshot.size;
   const productsCount = productsSnapshot.size;
+  const ordersCount = ordersSnapshot.size;
 
   return {
     users: usersCount,
     products: productsCount,
+    orders: ordersCount,
   };
 }
