@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useMutation, useQuery } from "@tanstack/react-query";
 
 import LoadingIndicator from "../components/UI/LoadingIndicator";
@@ -53,12 +53,20 @@ export default function NewProductPage() {
         <ProductForm categories={categories} onSubmit={handleSubmit}>
           {isPending && <LoadingIndicator />}
           {!isPending && (
-            <button
-              type="submit"
-              className="w-full py-2 px-4 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600 transition duration-200"
-            >
-              Add Product
-            </button>
+            <div className="flex justify-between w-full">
+              <Link
+                to="/ecommerce"
+                className="mr-2 w-full inline-flex justify-center rounded-md border border-gray-300 bg-white px-4 py-4 text-md font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              >
+                Cancel
+              </Link>
+              <button
+                type="submit"
+                className="w-full inline-flex justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-4 text-md font-medium text-white shadow-sm hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              >
+                Add
+              </button>
+            </div>
           )}
         </ProductForm>
       )}

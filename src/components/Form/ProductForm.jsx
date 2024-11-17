@@ -87,7 +87,12 @@ export default function ProductForm({
       const reader = new FileReader();
       reader.onloadend = () => {
         setGalleryImages((prev) => [...prev, file]);
-        setGalleryImagePreviews((prev) => [...prev, reader.result]);
+        setGalleryImagePreviews((prev) => {
+          if (!prev.includes(reader.result)) {
+            return [...prev, reader.result];
+          }
+          return prev;
+        });
       };
       reader.readAsDataURL(file);
     });
@@ -125,8 +130,9 @@ export default function ProductForm({
     e.preventDefault();
 
     let mainImageUrl = mainImagePreview;
-    let galleryImageUrls = galleryImagePreviews.filter(
-      (url) => !removedGalleryImages.includes(url)
+    const firebaseURLPattern = /^https?:\/\/firebasestorage\.googleapis\.com/;
+    let galleryImageUrls = galleryImagePreviews.filter((url) =>
+      firebaseURLPattern.test(url)
     );
 
     try {
@@ -160,10 +166,12 @@ export default function ProductForm({
       rating: product ? product.rating : 0,
       sale: product ? product.sale : 0,
       updatedAt: product ? serverTimestamp() : null,
-      createdAt: product ? null : serverTimestamp(),
+      createdAt: product ? product.createdAt : serverTimestamp(),
     };
 
     onSubmit(productData);
+    setGalleryImages([]);
+    setRemovedGalleryImages([]);
   };
 
   return (
