@@ -75,6 +75,11 @@ export default function ProductPieChart() {
         color="transparent"
         className="flex flex-col ml-4 gap-4 rounded-none md:flex-row md:items-center"
       />
+      <div>
+        <Typography variant="h6" color="blue-gray" className="ml-4 mt-2">
+          Top 5 sale products
+        </Typography>
+      </div>
       <Chart options={options} series={series} type="pie" />
     </Card>
   );

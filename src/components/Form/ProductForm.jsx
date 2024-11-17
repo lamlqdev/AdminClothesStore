@@ -158,9 +158,14 @@ export default function ProductForm({
       return;
     }
 
+    const validatedSizes = sizes.map((size) => ({
+      ...size,
+      quantity: Number(size.quantity),
+    }));
+
     const productData = {
       ...formData,
-      sizelist: sizes,
+      sizelist: validatedSizes,
       image: mainImageUrl,
       images: galleryImageUrls,
       rating: product ? product.rating : 0,
