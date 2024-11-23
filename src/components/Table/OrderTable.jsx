@@ -15,9 +15,9 @@ import { useState } from "react";
 
 const TABLE_HEAD = [
   "Order ID",
-  "Date of order",
+  "Order Time",
   "Customer",
-  "Price",
+  "Total Price",
   "Status",
   "Manage",
 ];
@@ -27,6 +27,18 @@ export default function OrderTable({ orders }) {
 
   const handleSearch = (event) => {
     setSearchTerm(event.target.value);
+  };
+
+  const formatDate = (timestamp) => {
+    const date = timestamp.toDate();
+    const day = date.getDate().toString().padStart(2, "0");
+    const month = (date.getMonth() + 1).toString().padStart(2, "0");
+    const year = date.getFullYear();
+    const hours = date.getHours().toString().padStart(2, "0");
+    const minutes = date.getMinutes().toString().padStart(2, "0");
+    const seconds = date.getSeconds().toString().padStart(2, "0");
+
+    return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
   };
 
   const filteredOrders = orders.filter(
@@ -101,7 +113,7 @@ export default function OrderTable({ orders }) {
                       color="blue-gray"
                       className="font-normal"
                     >
-                      {order.orderTime?.toDate().toLocaleDateString("en-GB")}
+                      {formatDate(order.orderTime)}
                     </Typography>
                   </td>
                   <td className={classes}>
@@ -138,7 +150,7 @@ export default function OrderTable({ orders }) {
                       color="blue-gray"
                       className="font-normal"
                     >
-                      {order.total}
+                      {order.total} $
                     </Typography>
                   </td>
                   <td className={classes}>

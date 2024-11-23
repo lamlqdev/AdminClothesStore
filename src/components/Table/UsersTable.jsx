@@ -1,19 +1,18 @@
 import { useState, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
+
 import {
   Card,
   CardBody,
   CardHeader,
   Typography,
-  Input,
 } from "@material-tailwind/react";
-import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { Link } from "react-router-dom";
 import { fetchUsers } from "../../api/userAPI";
 import ErrorBlock from "../UI/ErrorBlock";
 import LoadingIndicator from "../UI/LoadingIndicator";
 
-const TABLE_HEAD = ["User ID", "Name", "Email", "Membership", "Actions"];
+const TABLE_HEAD = ["Serial", "Name", "Email", "Membership", "Actions"];
 
 export default function UserInfoTable() {
   const searchElement = useRef();
@@ -79,7 +78,7 @@ export default function UserInfoTable() {
               </td>
             </tr>
           ) : (
-            users.map((user) => (
+            users.map((user, index) => (
               <tr key={user.id} className="even:bg-blue-gray-50/50">
                 <td className="p-4 border-b border-blue-gray-100">
                   <Typography
@@ -87,7 +86,7 @@ export default function UserInfoTable() {
                     color="blue-gray"
                     className="font-normal"
                   >
-                    {user.id}
+                    {index + 1}
                   </Typography>
                 </td>
                 <td className="p-4 border-b border-blue-gray-100">

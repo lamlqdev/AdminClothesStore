@@ -110,7 +110,7 @@ export default function MembershipTable() {
                   color="blue-gray"
                   className="font-normal"
                 >
-                  {`${membership.minimumSpend} VND`}
+                  {`${membership.minimumSpend} $`}
                 </Typography>
               </td>
               <td className="p-4 border-b border-blue-gray-100">

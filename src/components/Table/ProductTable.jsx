@@ -19,7 +19,7 @@ import {
 const TABLE_HEAD = [
   "Serial",
   "Product Image",
-  "ID Product",
+  "Gender",
   "Product Name",
   "Category",
   "Price",
@@ -48,6 +48,11 @@ export default function ProductTable({ products, categories }) {
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
   };
+
+  const categoryLookup = categories.reduce((acc, category) => {
+    acc[category.categoryId] = category.name;
+    return acc;
+  }, {});
 
   const filteredProducts = products
     .filter(
@@ -157,7 +162,7 @@ export default function ProductTable({ products, categories }) {
                       color="blue-gray"
                       className="font-normal"
                     >
-                      {product.id}
+                      {product.gender}
                     </Typography>
                   </td>
                   <td className="p-4 border-b border-blue-gray-100">
@@ -175,7 +180,7 @@ export default function ProductTable({ products, categories }) {
                       color="blue-gray"
                       className="font-normal"
                     >
-                      {product.categoryId}
+                      {categoryLookup[product.categoryId]}
                     </Typography>
                   </td>
                   <td className="p-4 border-b border-blue-gray-100">
