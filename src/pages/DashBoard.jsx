@@ -5,26 +5,28 @@ import { db } from "../firebase";
 
 import RevevueBarChart from "../components/Chart/RevenueBarChart";
 import ProductPieChart from "../components/Chart/OrderPieChart";
+import OrderLineChart from "../components/Chart/OrderLineChart";
+import OrderStatusPieChart from "../components/Chart/OrderStatusPieChart";
 import CardDataStat from "../components/CardDataStat";
 
 export default function DashBoardPage() {
-  const { users, products, orders } = useLoaderData();
+  const { usersCount, productsCount, ordersCount, orders } = useLoaderData();
   return (
     <>
       <section className="text-gray-700 body-font">
         <div className="container px-5 mx-auto">
           <div className="flex flex-wrap -m-4 text-center">
             <div className="p-4 md:w-1/4 sm:w-1/2 w-full">
-              <CardDataStat icon={Package} title="Orders" data={orders} />
+              <CardDataStat icon={Package} title="Orders" data={ordersCount} />
             </div>
             <div className="p-4 md:w-1/4 sm:w-1/2 w-full">
-              <CardDataStat icon={Users} title="Users" data={users} />
+              <CardDataStat icon={Users} title="Users" data={usersCount} />
             </div>
             <div className="p-4 md:w-1/4 sm:w-1/2 w-full">
               <CardDataStat
                 icon={ShoppingBag}
                 title="Products"
-                data={products}
+                data={productsCount}
               />
             </div>
             <div className="p-4 md:w-1/4 sm:w-1/2 w-full">
@@ -41,6 +43,15 @@ export default function DashBoardPage() {
             <ProductPieChart />
           </div>
         </div>
+
+        <div className="flex gap-4 mb-4">
+          <div className="w-7/12">
+            <OrderLineChart orders={orders} />
+          </div>
+          <div className="w-5/12">
+            <OrderStatusPieChart orders={orders} />
+          </div>
+        </div>
       </section>
     </>
   );
@@ -55,9 +66,15 @@ export async function loader() {
   const productsCount = productsSnapshot.size;
   const ordersCount = ordersSnapshot.size;
 
+  const orders = ordersSnapshot.docs.map((doc) => ({
+    id: doc.id,
+    ...doc.data(),
+  }));
+
   return {
-    users: usersCount,
-    products: productsCount,
-    orders: ordersCount,
+    usersCount,
+    productsCount,
+    ordersCount,
+    orders,
   };
 }
