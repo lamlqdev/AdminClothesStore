@@ -1,3 +1,7 @@
+import { Link } from "react-router-dom";
+import { useState } from "react";
+
+import { formatDate } from "../../utils/util";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import {
   Card,
@@ -10,8 +14,6 @@ import {
   CardFooter,
   Avatar,
 } from "@material-tailwind/react";
-import { Link } from "react-router-dom";
-import { useState } from "react";
 
 const TABLE_HEAD = [
   "Order ID",
@@ -27,18 +29,6 @@ export default function OrderTable({ orders }) {
 
   const handleSearch = (event) => {
     setSearchTerm(event.target.value);
-  };
-
-  const formatDate = (timestamp) => {
-    const date = timestamp.toDate();
-    const day = date.getDate().toString().padStart(2, "0");
-    const month = (date.getMonth() + 1).toString().padStart(2, "0");
-    const year = date.getFullYear();
-    const hours = date.getHours().toString().padStart(2, "0");
-    const minutes = date.getMinutes().toString().padStart(2, "0");
-    const seconds = date.getSeconds().toString().padStart(2, "0");
-
-    return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
   };
 
   const filteredOrders = orders.filter(

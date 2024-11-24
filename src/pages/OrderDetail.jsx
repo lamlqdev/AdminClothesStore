@@ -1,8 +1,8 @@
-import React from "react";
 import { Avatar, Card, CardBody, Typography } from "@material-tailwind/react";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../firebase";
 import { useLoaderData } from "react-router-dom";
+import { formatDate } from "../utils/util";
 
 export default function OrderDetail() {
   const orderDetail = useLoaderData();
@@ -20,8 +20,7 @@ export default function OrderDetail() {
             <strong>Order ID:</strong> {orderDetail.id}
           </p>
           <p>
-            <strong>Date of Order:</strong>{" "}
-            {orderDetail.orderTime?.toDate().toLocaleDateString("en-GB")}
+            <strong>Date of Order:</strong> {formatDate(orderDetail.orderTime)}
           </p>
           <p>
             <strong>Status:</strong> {orderDetail.orderStatus}
@@ -68,38 +67,45 @@ export default function OrderDetail() {
       {/* Product List */}
       <Card className="mb-6">
         <CardBody>
-          <Typography variant="h5" className="mb-2">
+          <Typography variant="h5" className="mb-4">
             Product List
           </Typography>
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {orderDetail.products.map((product) => (
-              <div
-                key={product.id}
-                className="border rounded-lg shadow-lg p-4 bg-white"
-              >
-                <img
-                  src={product.productImage}
-                  alt={product.productName}
-                  className="h-38 w-full object-cover rounded-t-lg"
-                />
-                <div className="mt-2">
-                  <Typography variant="h6" className="font-semibold">
+          <table className="min-w-full bg-white border border-gray-300 rounded-lg">
+            <thead>
+              <tr className="bg-gray-200">
+                <th className="text-center p-2 border-b ">No.</th>
+                <th className="text-center p-2 border-b">Product Image</th>
+                <th className="text-center p-2 border-b">Product Name</th>
+                <th className="text-center p-2 border-b">Quantity</th>
+                <th className="text-center p-2 border-b">Size</th>
+                <th className="text-center p-2 border-b">Total Price</th>
+              </tr>
+            </thead>
+            <tbody>
+              {orderDetail.products.map((product, index) => (
+                <tr key={index} className="hover:bg-gray-100">
+                  <td className="p-2 border-b text-center">{index + 1}</td>
+                  <td className="p-2 border-b text-center">
+                    <img
+                      src={product.productImage}
+                      alt={product.productName}
+                      className="h-16 w-16 object-cover rounded-lg mx-auto"
+                    />
+                  </td>
+                  <td className="p-2 border-b text-center">
                     {product.productName}
-                  </Typography>
-                  <p>
-                    <strong>Quantity:</strong> {product.quantity}
-                  </p>
-                  <p>
-                    <strong>Size:</strong> {product.size}
-                  </p>
-                  <p>
-                    <strong>Total Price:</strong> $
-                    {product.price * product.quantity}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
+                  </td>
+                  <td className="p-2 border-b text-center">
+                    {product.quantity}
+                  </td>
+                  <td className="p-2 border-b text-center">{product.size}</td>
+                  <td className="p-2 border-b text-center">
+                    ${product.price * product.quantity}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </CardBody>
       </Card>
 
