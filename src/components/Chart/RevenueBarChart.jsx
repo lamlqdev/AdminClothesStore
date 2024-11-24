@@ -6,104 +6,85 @@ import {
   Button,
 } from "@material-tailwind/react";
 import Chart from "react-apexcharts";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import dayjs from "dayjs";
 
 const TABS = [
-  { label: "Day", value: "day" },
   { label: "Week", value: "week" },
   { label: "Month", value: "month" },
 ];
 
-const chartConfig = {
-  type: "bar",
-  height: 280,
-  series: [
-    {
-      name: "Sales",
-      data: [50, 40, 300, 320, 500, 350, 200, 230, 500],
-    },
-  ],
-  options: {
-    chart: {
-      toolbar: {
-        show: false,
-      },
-    },
-    title: {
-      show: "",
-    },
-    dataLabels: {
-      enabled: false,
-    },
-    colors: ["#6366F1"],
-    plotOptions: {
-      bar: {
-        columnWidth: "40%",
-        borderRadius: 2,
-      },
-    },
-    xaxis: {
-      axisTicks: {
-        show: false,
-      },
-      axisBorder: {
-        show: false,
-      },
-      labels: {
-        style: {
-          colors: "#616161",
-          fontSize: "12px",
-          fontFamily: "inherit",
-          fontWeight: 400,
-        },
-      },
-      categories: [
-        "Apr",
-        "May",
-        "Jun",
-        "Jul",
-        "Aug",
-        "Sep",
-        "Oct",
-        "Nov",
-        "Dec",
-      ],
-    },
-    yaxis: {
-      labels: {
-        style: {
-          colors: "#616161",
-          fontSize: "12px",
-          fontFamily: "inherit",
-          fontWeight: 400,
-        },
-      },
-    },
-    grid: {
-      show: true,
-      borderColor: "#dddddd",
-      strokeDashArray: 5,
-      xaxis: {
-        lines: {
-          show: true,
-        },
-      },
-      padding: {
-        top: 5,
-        right: 20,
-      },
-    },
-    fill: {
-      opacity: 0.8,
-    },
-    tooltip: {
-      theme: "dark",
-    },
-  },
-};
+export default function RevenueBarChart({ orders }) {
+  const [activeTab, setActiveTab] = useState("week");
+  const [chartData, setChartData] = useState({
+    categories: [],
+    series: [],
+  });
 
-export default function RevenueBarChart() {
-  const [activeTab, setActiveTab] = useState("month");
+  useEffect(() => {
+    if (activeTab === "week") {
+      setChartData(calculateWeeklyData(orders));
+    } else if (activeTab === "month") {
+      setChartData(calculateMonthlyData(orders));
+    }
+  }, [activeTab, orders]);
+
+  const calculateWeeklyData = (orders) => {
+    // Lấy ngày đầu tuần (thứ Hai) và ngày cuối tuần (Chủ Nhật)
+    const startOfWeek = dayjs().startOf("week").add(1, "day"); // Thứ Hai
+    const endOfWeek = dayjs().endOf("week").add(1, "day"); // Chủ Nhật
+
+    // Tạo mảng 7 ngày
+    const days = Array.from({ length: 7 }, (_, i) => startOfWeek.add(i, "day"));
+
+    // Tính tổng profit cho từng ngày
+    const dailyTotals = days.map((day) => {
+      const dayOrders = orders.filter((order) =>
+        dayjs(order.orderTime.toDate()).isSame(day, "day")
+      );
+      return dayOrders.reduce((acc, order) => acc + (order.total || 0), 0);
+    });
+
+    return {
+      categories: days.map((day) => day.format("ddd")),
+      series: [{ name: "Profit", data: dailyTotals }],
+    };
+  };
+
+  const calculateMonthlyData = (orders) => {
+    // Lấy 12 tháng gần đây
+    const months = Array.from({ length: 12 }, (_, i) =>
+      dayjs().subtract(i, "month")
+    ).reverse();
+
+    // Tính tổng profit cho từng tháng
+    const monthlyTotals = months.map((month) => {
+      const monthOrders = orders.filter((order) =>
+        dayjs(order.orderTime.toDate()).isSame(month, "month")
+      );
+      return monthOrders.reduce((acc, order) => acc + (order.total || 0), 0);
+    });
+
+    return {
+      categories: months.map((month) => month.format("MMM")),
+      series: [{ name: "Profit", data: monthlyTotals }],
+    };
+  };
+
+  const chartConfig = {
+    type: "bar",
+    height: 280,
+    series: chartData.series,
+    options: {
+      chart: { toolbar: { show: false } },
+      colors: ["#6366F1"],
+      plotOptions: { bar: { columnWidth: "40%", borderRadius: 2 } },
+      xaxis: { categories: chartData.categories },
+      yaxis: { labels: { style: { fontSize: "12px" } } },
+      grid: { borderColor: "#ddd", strokeDashArray: 5 },
+      tooltip: { theme: "dark" },
+    },
+  };
 
   return (
     <Card>
@@ -113,23 +94,21 @@ export default function RevenueBarChart() {
         color="transparent"
         className="flex flex-col gap-4 mx-4 justify-between rounded-none md:flex-row md:items-center"
       >
-        <div>
-          <Typography variant="h6" color="blue-gray">
-            Total Revenue
-          </Typography>
-        </div>
-        <div className="flex gap-2 w-full md:w-max ml-3">
+        <Typography variant="h6" color="blue-gray">
+          Total Revenue
+        </Typography>
+        <div className="flex gap-2 w-full md:w-max">
           {TABS.map(({ label, value }) => (
             <Button
               key={value}
               onClick={() => setActiveTab(value)}
-              className={`px-3 py-2 text-sm gap-1 rounded-md transition-all duration-300 ${
+              className={`px-3 py-2 text-sm rounded-md ${
                 activeTab === value
                   ? "bg-primaryColor text-white"
                   : "bg-transparent text-gray-700 hover:bg-gray-300"
               }`}
             >
-              &nbsp;&nbsp;{label}&nbsp;&nbsp;
+              {label}
             </Button>
           ))}
         </div>

@@ -11,6 +11,11 @@ import CardDataStat from "../components/CardDataStat";
 
 export default function DashBoardPage() {
   const { usersCount, productsCount, ordersCount, orders } = useLoaderData();
+  const totalRevenue = orders.reduce(
+    (acc, order) => acc + (order.total || 0),
+    0
+  );
+
   return (
     <>
       <section className="text-gray-700 body-font">
@@ -30,14 +35,18 @@ export default function DashBoardPage() {
               />
             </div>
             <div className="p-4 md:w-1/4 sm:w-1/2 w-full">
-              <CardDataStat icon={HandCoins} title="Profits" data="46" />
+              <CardDataStat
+                icon={HandCoins}
+                title="Profits"
+                data={`${totalRevenue}$`}
+              />
             </div>
           </div>
         </div>
 
         <div className="flex gap-4 my-4">
           <div className="w-7/12">
-            <RevevueBarChart />
+            <RevevueBarChart orders={orders} />
           </div>
           <div className="w-5/12">
             <ProductPieChart />
