@@ -246,7 +246,7 @@ export default function OrderDetail() {
           ripple="light"
           className="mt-4 mr-2"
         >
-          Export to PDF
+          Print invoice
         </Button>
       </div>
     </div>
