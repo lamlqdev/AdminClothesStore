@@ -16,6 +16,8 @@ import NewCategory from "./pages/NewCategory";
 import EditCategory from "./pages/EditCategory";
 import NewMembership from "./pages/NewMembership";
 import EditMembership from "./pages/EditMembership";
+import LoginPage from "./pages/LoginPage";
+import ProtectedRoute from "./pages/ProtectedRoute";
 
 import { queryClient } from "./api/client";
 import { loader as orderLoader } from "./pages/Order";
@@ -24,8 +26,16 @@ import { loader as dashboardLoader } from "./pages/DashBoard";
 
 const router = createBrowserRouter([
   {
+    path: "/login",
+    element: <LoginPage />,
+  },
+  {
     path: "/",
-    element: <DefaultLayout />,
+    element: (
+      <ProtectedRoute>
+        <DefaultLayout />
+      </ProtectedRoute>
+    ),
     children: [
       {
         index: true,

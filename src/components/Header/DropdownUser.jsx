@@ -1,10 +1,23 @@
 import { useState } from "react";
+import { signOut } from "firebase/auth";
+import { auth } from "../../firebase";
+
 import ClickOutside from "../../ClickOutside";
 import { ChevronDown, User, BookOpen, Settings, LogOut } from "lucide-react";
 import { Link } from "react-router-dom";
 
 export default function DropdownUser() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      navigate("/login");
+    } catch (error) {
+      console.error("Error logging out: ", error);
+    }
+  };
+
   return (
     <ClickOutside onClick={() => setDropdownOpen(false)} className="relative">
       <Link
@@ -59,7 +72,10 @@ export default function DropdownUser() {
             </li>
           </ul>
 
-          <button className="flex items-center gap-3.5 px-6 py-4 text-sm font-medium duration-300 ease-in-out hover:text-primary lg:text-base">
+          <button
+            onClick={handleLogout}
+            className="flex items-center gap-3.5 px-6 py-4 text-sm font-medium duration-300 ease-in-out hover:text-primary lg:text-base"
+          >
             <LogOut size={22} />
             Log Out
           </button>
