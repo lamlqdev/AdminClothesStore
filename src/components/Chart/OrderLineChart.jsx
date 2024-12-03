@@ -18,33 +18,39 @@ const OrderLineChart = ({ orders }) => {
 
   useEffect(() => {
     const processData = () => {
+      const vietnamTimezoneOffset = 7 * 60 * 60 * 1000; // Offset in milliseconds
+
       if (selectedTab === "week") {
-        // Tính toán số order mỗi ngày trong 7 ngày gần nhất
         const last7Days = Array.from({ length: 7 }, (_, i) => {
           const date = new Date();
           date.setDate(date.getDate() - i);
-          return date.toISOString().split("T")[0];
+          return new Date(date.getTime() + vietnamTimezoneOffset); // Adjust for Vietnam timezone
         }).reverse();
 
         const data = last7Days.map((date) => {
+          const localDate = date.toISOString().split("T")[0];
           return orders.filter((order) => {
-            const orderDate = new Date(order.orderTime.seconds * 1000);
-            return orderDate.toISOString().split("T")[0] === date;
+            const orderDate = new Date(
+              order.orderTime.seconds * 1000 + vietnamTimezoneOffset
+            );
+            return orderDate.toISOString().split("T")[0] === localDate;
           }).length;
         });
 
+        const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
         setChartData({
-          categories: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+          categories: last7Days.map((date) => dayNames[date.getUTCDay()]), // Use getUTCDay for correct day name
           series: [{ name: "Orders", data }],
         });
       } else if (selectedTab === "month") {
-        // Tính toán số order theo 12 tháng trong năm
         const months = Array.from({ length: 12 }, (_, i) => i + 1);
 
         const data = months.map((month) => {
           return orders.filter((order) => {
-            const orderDate = new Date(order.orderTime.seconds * 1000);
-            return orderDate.getMonth() + 1 === month;
+            const orderDate = new Date(
+              order.orderTime.seconds * 1000 + vietnamTimezoneOffset
+            );
+            return orderDate.getUTCMonth() + 1 === month;
           }).length;
         });
 
@@ -78,6 +84,9 @@ const OrderLineChart = ({ orders }) => {
     options: {
       xaxis: {
         categories: chartData.categories,
+      },
+      dataLabels: {
+        enabled: true, // Enable data labels
       },
     },
   };

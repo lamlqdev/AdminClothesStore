@@ -12,7 +12,7 @@ import CardDataStat from "../components/CardDataStat";
 export default function DashBoardPage() {
   const { usersCount, productsCount, ordersCount, orders } = useLoaderData();
   const totalRevenue = orders.reduce(
-    (acc, order) => acc + (order.total || 0),
+    (acc, order) => acc + Number(order.total || 0),
     0
   );
 

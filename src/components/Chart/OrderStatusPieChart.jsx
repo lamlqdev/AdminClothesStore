@@ -22,7 +22,7 @@ function calculateOrderStatus(orders) {
 
 export default function OrderStatusPieChart({ orders }) {
   const statusCount = calculateOrderStatus(orders);
-
+  const totalOrders = orders.length;
   const chartData = {
     series: Object.values(statusCount),
     options: {
@@ -36,7 +36,19 @@ export default function OrderStatusPieChart({ orders }) {
         show: false,
       },
       dataLabels: {
-        enabled: false,
+        enabled: true,
+        formatter: function (val, opts) {
+          return opts.w.config.series[opts.seriesIndex];
+        },
+        style: {
+          fontSize: "14px",
+          fontFamily: "Helvetica, Arial, sans-serif",
+          fontWeight: "bold",
+          colors: ["#fff"],
+        },
+        dropShadow: {
+          enabled: false,
+        },
       },
       colors: [
         "#ff8f00",

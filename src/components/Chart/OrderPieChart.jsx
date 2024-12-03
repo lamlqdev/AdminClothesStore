@@ -1,37 +1,8 @@
-import {
-  Card,
-  CardBody,
-  CardHeader,
-  Typography,
-} from "@material-tailwind/react";
+import { Card, CardHeader, Typography } from "@material-tailwind/react";
 import { useQuery } from "@tanstack/react-query";
 
 import Chart from "react-apexcharts";
 import { fetchProducts } from "../../api/productAPI";
-
-const chartConfig = {
-  type: "pie",
-  width: 280,
-  height: 280,
-  series: [44, 55, 13, 43, 22],
-  options: {
-    chart: {
-      toolbar: {
-        show: false,
-      },
-    },
-    title: {
-      show: "",
-    },
-    dataLabels: {
-      enabled: false,
-    },
-    colors: ["#020617", "#ff8f00", "#00897b", "#1e88e5", "#d81b60"],
-    legend: {
-      show: true,
-    },
-  },
-};
 
 export default function ProductPieChart() {
   const { data: products } = useQuery({
@@ -56,7 +27,19 @@ export default function ProductPieChart() {
       show: "",
     },
     dataLabels: {
-      enabled: false,
+      enabled: true,
+      formatter: function (val, opts) {
+        return opts.w.config.series[opts.seriesIndex];
+      },
+      style: {
+        fontSize: "14px",
+        fontFamily: "Helvetica, Arial, sans-serif",
+        fontWeight: "bold",
+        colors: ["#fff"],
+      },
+      dropShadow: {
+        enabled: false,
+      },
     },
     colors: ["#020617", "#ff8f00", "#00897b", "#1e88e5", "#d81b60"],
     legend: {
