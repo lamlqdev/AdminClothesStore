@@ -85,8 +85,7 @@ const UserProfile = () => {
             Membership Information
           </h2>
           <p>
-            <strong>Membership Status:</strong>{" "}
-            {user.membershipId ? user.membershipId : "Normal Customer"}
+            <strong>Membership Status:</strong> {user.membershipLevel}
           </p>
           <p>
             <strong>Join Date:</strong>{" "}

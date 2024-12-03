@@ -1,11 +1,6 @@
 import { useState, useEffect } from "react";
 import { Trash } from "lucide-react";
-import {
-  ref,
-  uploadBytes,
-  getDownloadURL,
-  deleteObject,
-} from "firebase/storage";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { serverTimestamp } from "firebase/firestore";
 import { storage } from "../../firebase";
 
@@ -266,7 +261,7 @@ export default function ProductForm({
           value={formData.description}
           onChange={handleChange}
           required
-          className="w-full mt-1 p-2 border border-gray-300 rounded-md"
+          className="w-full mt-1 p-2 border border-gray-300 rounded-md h-80"
         ></textarea>
       </div>
 

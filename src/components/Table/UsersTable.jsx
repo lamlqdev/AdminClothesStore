@@ -113,7 +113,7 @@ export default function UserInfoTable() {
                     color="blue-gray"
                     className="font-normal"
                   >
-                    {user.membershipId ? user.membershipId : "Normal Customer"}
+                    {user.membershipLevel}
                   </Typography>
                 </td>
                 <td className="p-4 border-b border-blue-gray-100">

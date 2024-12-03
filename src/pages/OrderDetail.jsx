@@ -100,7 +100,7 @@ export default function OrderDetail() {
     pdf.setFontSize(10);
     pdf.text(`Total: $${orderDetail.total.toFixed(2)}`, 15, finalY + 10);
     pdf.text(
-      `Shipping Cost: $${orderDetail.shippingCost?.toFixed(2) || "0.00"}`,
+      `Shipping Cost: $${orderDetail.shippingCost?.toFixed(2) || "1.00"}`,
       15,
       finalY + 20
     );
@@ -230,7 +230,7 @@ export default function OrderDetail() {
               <strong>Total:</strong> ${orderDetail.total}
             </p>
             <p>
-              <strong>Shipping Cost:</strong> ${orderDetail.shippingCost || "0"}
+              <strong>Shipping Cost:</strong> ${orderDetail.shippingCost || "1"}
             </p>
             <p>
               <strong>Discount Member:</strong>{" "}
