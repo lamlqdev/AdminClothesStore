@@ -54,7 +54,9 @@ export default function ProductTable({ products, categories }) {
     return acc;
   }, {});
 
-  const filteredProducts = products
+  const sortedProducts = products.sort((a, b) => b.createdAt - a.createdAt);
+
+  const filteredProducts = sortedProducts
     .filter(
       (product) =>
         selectedCategory === "all" || product.categoryId === selectedCategory

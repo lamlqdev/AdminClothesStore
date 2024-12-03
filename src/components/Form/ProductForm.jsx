@@ -53,7 +53,7 @@ export default function ProductForm({
     const { name, value } = e.target;
     setFormData({
       ...formData,
-      [name]: value,
+      [name]: name === "price" ? Number(value) : value,
     });
   };
 
@@ -112,17 +112,35 @@ export default function ProductForm({
   };
 
   const handleSizeChange = (index, event) => {
-    const newSizes = sizes.map((size, i) => {
-      if (i === index) {
-        return { ...size, [event.target.name]: event.target.value };
-      }
-      return size;
-    });
+    const { name, value } = event.target;
+    const newSizes = sizes.map((size, i) =>
+      i === index
+        ? { ...size, [name]: name === "quantity" ? Number(value) : value }
+        : size
+    );
     setSizes(newSizes);
+  };
+
+  const validateForm = () => {
+    if (isNaN(formData.price) || formData.price <= 0) {
+      alert("Price must be a positive number.");
+      return false;
+    }
+    for (let size of sizes) {
+      if (isNaN(size.quantity) || size.quantity < 0) {
+        alert("Quantity must be a non-negative number.");
+        return false;
+      }
+    }
+    return true;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!validateForm()) {
+      return;
+    }
 
     let mainImageUrl = mainImagePreview;
     const firebaseURLPattern = /^https?:\/\/firebasestorage\.googleapis\.com/;

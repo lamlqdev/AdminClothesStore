@@ -53,7 +53,7 @@ export default function CategoryForm({ category, onSubmit, children }) {
             rel="noopener noreferrer"
             className="text-blue-600 text-sm"
           >
-            https://oblador.github.io/react-native-vector-icons/
+            https://oblador.github.io/react-native-vector-icons/#FontAwesome5
           </a>
         </p>
       </div>
@@ -85,7 +85,7 @@ export default function CategoryForm({ category, onSubmit, children }) {
           type="text"
           id="library"
           name="library"
-          defaultValue={category ? category.library : ""}
+          defaultValue={category ? category.library : "FontAwesome5"}
           required
           className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500"
         />
