@@ -29,6 +29,8 @@ const TABLE_HEAD = [
 
 export default function ProductTable({ products, categories }) {
   const navigate = useNavigate();
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -64,6 +66,21 @@ export default function ProductTable({ products, categories }) {
     .filter((product) =>
       product.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
+
+  const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const currentProducts = filteredProducts.slice(
+    startIndex,
+    startIndex + itemsPerPage
+  );
+
+  const handlePreviousPage = () => {
+    setCurrentPage((prevPage) => Math.max(prevPage - 1, 1));
+  };
+
+  const handleNextPage = () => {
+    setCurrentPage((prevPage) => Math.min(prevPage + 1, totalPages));
+  };
 
   return (
     <Card className="h-full w-full">
@@ -133,7 +150,7 @@ export default function ProductTable({ products, categories }) {
           </thead>
 
           <tbody>
-            {filteredProducts.map((product, index) => {
+            {currentProducts.map((product, index) => {
               const totalQuantity = product.sizelist
                 ? product.sizelist.reduce(
                     (total, size) => total + size.quantity,
@@ -218,13 +235,23 @@ export default function ProductTable({ products, categories }) {
       </CardBody>
       <CardFooter className="flex items-center justify-between border-t border-blue-gray-50 p-4">
         <Typography variant="small" color="blue-gray" className="font-normal">
-          Page 1 of 10
+          Page {currentPage} of {totalPages}
         </Typography>
         <div className="flex gap-2">
-          <Button variant="outlined" size="sm">
+          <Button
+            variant="outlined"
+            size="sm"
+            onClick={handlePreviousPage}
+            disabled={currentPage === 1}
+          >
             Previous
           </Button>
-          <Button variant="outlined" size="sm">
+          <Button
+            variant="outlined"
+            size="sm"
+            onClick={handleNextPage}
+            disabled={currentPage === totalPages}
+          >
             Next
           </Button>
         </div>
