@@ -42,10 +42,11 @@ export default function RevenueBarChart({ orders }) {
       const dayOrders = orders.filter((order) =>
         dayjs(order.orderTime.toDate()).isSame(day, "day")
       );
-      return dayOrders.reduce(
+      const total = dayOrders.reduce(
         (acc, order) => acc + Number(order.total || 0),
         0
       );
+      return parseFloat(total.toFixed(2));
     });
 
     return {
@@ -65,10 +66,11 @@ export default function RevenueBarChart({ orders }) {
       const monthOrders = orders.filter((order) =>
         dayjs(order.orderTime.toDate()).isSame(month, "month")
       );
-      return monthOrders.reduce(
+      const total = monthOrders.reduce(
         (acc, order) => acc + Number(order.total || 0),
         0
       );
+      return parseFloat(total.toFixed(2));
     });
 
     return {
