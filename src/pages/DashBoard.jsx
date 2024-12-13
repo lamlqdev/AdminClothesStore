@@ -38,7 +38,7 @@ export default function DashBoardPage() {
               <CardDataStat
                 icon={HandCoins}
                 title="Profits"
-                data={`${totalRevenue}$`}
+                data={`${parseFloat(totalRevenue.toFixed(2))}$`}
               />
             </div>
           </div>

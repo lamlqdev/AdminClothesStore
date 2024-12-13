@@ -51,7 +51,7 @@ export default function MembershipTable() {
         queryKey: ["memberships"],
         refetchType: "none",
       });
-      navigate("/crm");
+      navigate("/");
     },
   });
 

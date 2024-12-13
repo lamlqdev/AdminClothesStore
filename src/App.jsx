@@ -23,6 +23,7 @@ import { queryClient } from "./api/client";
 import { loader as orderLoader } from "./pages/Order";
 import { loader as orderDetailLoader } from "./pages/OrderDetail";
 import { loader as dashboardLoader } from "./pages/DashBoard";
+import NotFoundPage from "./pages/NotFound";
 
 const router = createBrowserRouter([
   {
@@ -36,6 +37,7 @@ const router = createBrowserRouter([
         <DefaultLayout />
       </ProtectedRoute>
     ),
+    errorElement: <NotFoundPage />,
     children: [
       {
         index: true,
