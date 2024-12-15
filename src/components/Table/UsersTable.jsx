@@ -11,7 +11,7 @@ import { Link } from "react-router-dom";
 import LoadingIndicator from "../UI/LoadingIndicator";
 import ErrorBlock from "../UI/ErrorBlock";
 
-const TABLE_HEAD = ["Serial", "Name", "Email", "Membership", "Actions"];
+const TABLE_HEAD = ["Serial", "Name", "Phone number", "Membership", "Actions"];
 
 export default function UserInfoTable() {
   const {

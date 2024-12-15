@@ -98,14 +98,14 @@ export default function OrderDetail() {
     pdf.setFontSize(12);
     pdf.text("Order Summary:", 10, finalY);
     pdf.setFontSize(10);
-    pdf.text(`Total: $${orderDetail.total.toFixed(2)}`, 15, finalY + 10);
+    pdf.text(`Total: $${orderDetail.total}`, 15, finalY + 10);
     pdf.text(
       `Shipping Cost: $${orderDetail.shippingCost?.toFixed(2) || "1.00"}`,
       15,
       finalY + 20
     );
     pdf.text(
-      `Discount Member: ${orderDetail.discountCode || "None"}`,
+      `Discount Member: ${orderDetail.membershipInfo.membershipName || "None"}`,
       15,
       finalY + 30
     );
@@ -234,7 +234,7 @@ export default function OrderDetail() {
             </p>
             <p>
               <strong>Discount Member:</strong>{" "}
-              {orderDetail.discountCode || "None"}
+              {orderDetail.membershipInfo.membershipName || "None"}
             </p>
           </CardBody>
         </Card>
@@ -265,8 +265,15 @@ export async function loader({ params }) {
   const userDoc = await getDoc(doc(db, "users", order.userId));
   const userInfo = userDoc.exists() ? userDoc.data() : null;
 
+  //Fetch membership
+  const membershipDoc = await getDoc(
+    doc(db, "Membership", userInfo.membershipLevel)
+  );
+  const membershipInfo = membershipDoc.exists() ? membershipDoc.data() : null;
+
   return {
     ...order,
     userInfo,
+    membershipInfo,
   };
 }

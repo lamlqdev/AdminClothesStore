@@ -88,6 +88,7 @@ export default function OrderTable({ orders }) {
               <option value="">All</option>
               <option value="Completed">Completed</option>
               <option value="Waiting for payment">Waiting for payment</option>
+              <option value="Canceled">Canceled</option>
               <option value="Active">Active</option>
             </select>
           </div>
