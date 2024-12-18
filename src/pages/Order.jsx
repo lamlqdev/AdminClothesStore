@@ -25,11 +25,15 @@ export async function loader() {
     orderSnapshot.docs.map(async (doc) => {
       const order = { id: doc.id, ...doc.data() };
       const userInfo = await getUserInfo(order.userId);
+      if (!userInfo) {
+        return null; // Trả về null nếu không có userInfo
+      }
       return {
         ...order,
         userInfo,
       };
     })
   );
-  return orders;
+
+  return orders.filter((order) => order !== null);
 }
