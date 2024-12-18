@@ -6,14 +6,18 @@ import {
   CardBody,
   CardHeader,
   Typography,
+  Input,
 } from "@material-tailwind/react";
 import { Link } from "react-router-dom";
+import { useState } from "react";
 import LoadingIndicator from "../UI/LoadingIndicator";
 import ErrorBlock from "../UI/ErrorBlock";
 
 const TABLE_HEAD = ["Serial", "Name", "Phone number", "Membership", "Actions"];
 
 export default function UserInfoTable() {
+  const [searchQuery, setSearchQuery] = useState(""); // State for search input
+
   const {
     data: users,
     isLoading: isUsersLoading,
@@ -53,13 +57,31 @@ export default function UserInfoTable() {
     return map;
   }, {});
 
+  // Filter users based on search query
+  const filteredUsers = users.filter((user) =>
+    user.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <Card className="h-full w-full">
-      <CardHeader floated={false} shadow={false} className="rounded-none">
-        <div className="flex my-2 items-center justify-between gap-8">
-          <Typography variant="h5" color="blue-gray">
+      <CardHeader
+        floated={false}
+        shadow={false}
+        className="rounded-none w-full"
+      >
+        <div className="flex my-2 justify-between w-full">
+          {/* Tiêu đề bên trái */}
+          <Typography variant="h5" color="blue-gray" className="w-full">
             User Information
           </Typography>
+
+          {/* Ô tìm kiếm bên phải */}
+          <Input
+            placeholder="Search by name..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="border border-gray-300 rounded-lg shadow-sm pl-4 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-300 max-w-sm"
+          />
         </div>
       </CardHeader>
       <CardBody className="overflow-scroll px-0">
@@ -83,14 +105,14 @@ export default function UserInfoTable() {
             </tr>
           </thead>
           <tbody>
-            {users.length === 0 ? (
+            {filteredUsers.length === 0 ? (
               <tr>
                 <td colSpan="5" className="p-4 text-center text-gray-500">
                   No users found.
                 </td>
               </tr>
             ) : (
-              users.map((user, index) => (
+              filteredUsers.map((user, index) => (
                 <tr key={user.id} className="even:bg-blue-gray-50/50">
                   <td className="p-4 border-b border-blue-gray-100">
                     <Typography

@@ -10,7 +10,6 @@ import {
   Typography,
   Button,
   CardBody,
-  CardFooter,
   Avatar,
 } from "@material-tailwind/react";
 
