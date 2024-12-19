@@ -113,7 +113,7 @@ export default function UserInfoTable() {
               </tr>
             ) : (
               filteredUsers.map((user, index) => (
-                <tr key={user.id} className="even:bg-blue-gray-50/50">
+                <tr key={user.id || index} className="even:bg-blue-gray-50/50">
                   <td className="p-4 border-b border-blue-gray-100">
                     <Typography
                       variant="small"
@@ -129,7 +129,7 @@ export default function UserInfoTable() {
                       color="blue-gray"
                       className="font-normal"
                     >
-                      {user.name}
+                      {user.name || "No Name"}
                     </Typography>
                   </td>
                   <td className="p-4 border-b border-blue-gray-100">
@@ -138,9 +138,7 @@ export default function UserInfoTable() {
                       color="blue-gray"
                       className="font-normal"
                     >
-                      {user.phonelist.length > 0
-                        ? user.phonelist[0]
-                        : "No phone"}
+                      {user.phonelist?.[0] || "No Phone"}
                     </Typography>
                   </td>
                   <td className="p-4 border-b border-blue-gray-100">
@@ -149,12 +147,15 @@ export default function UserInfoTable() {
                       color="blue-gray"
                       className="font-normal"
                     >
-                      {membershipMap[user.membershipLevel] || "Unknown"}
+                      {membershipMap[user.membershipLevel] || "No Membership"}
                     </Typography>
                   </td>
                   <td className="p-4 border-b border-blue-gray-100">
-                    <Link to={`user-detail/${user.id}`}>
-                      <button className="bg-blue-500 hover:bg-blue-600 text-white py-1 px-3 rounded text-sm">
+                    <Link to={`user-detail/${user.id || ""}`}>
+                      <button
+                        className="bg-blue-500 hover:bg-blue-600 text-white py-1 px-3 rounded text-sm"
+                        disabled={!user.id} // Disable button if user ID is missing
+                      >
                         View Details
                       </button>
                     </Link>
